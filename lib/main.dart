@@ -9,7 +9,9 @@ import 'package:toko_app/pages/product_page.dart';
 import 'package:toko_app/pages/promo_page.dart';
 import 'package:toko_app/pages/sign_up_page.dart';
 import 'package:toko_app/pages/splash_page.dart';
-import 'package:toko_app/pages/upload_photo_page.dart';
+import 'package:toko_app/providers/cart_provider.dart';
+import 'package:toko_app/providers/transaction_provider.dart';
+import 'package:toko_app/providers/userApp_provider.dart';
 import 'package:toko_app/theme.dart';
 
 void main() async {
@@ -28,19 +30,26 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: primaryColor,
     ));
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/splash': (context) => const SplashPage(),
-        '/mainPage': (context) => const MainPage(),
-        '/productPage': (context) => const ProductPage(),
-        '/getstarted': (context) => const GetStartedPage(),
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignUpPage(),
-        '/promo': (context) => const PromoPage(),
-      },
-      home: const SplashPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) => UserAppProvider()),
+      ],
+      child: MaterialApp(
+        navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/splash': (context) => const SplashPage(),
+          '/mainPage': (context) => const MainPage(),
+          '/productPage': (context) => const ProductPage(),
+          '/getstarted': (context) => const GetStartedPage(),
+          '/login': (context) => const LoginPage(),
+          '/signup': (context) => const SignUpPage(),
+          '/promo': (context) => const PromoPage(),
+        },
+        home: const SplashPage(),
+      ),
     );
   }
 }

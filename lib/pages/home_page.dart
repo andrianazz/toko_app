@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/models/category_model.dart';
-import 'package:toko_app/models/product_model.dart';
 import 'package:toko_app/pages/detail_article_page.dart';
 import 'package:toko_app/pages/detail_product_page.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/best_sale_widget.dart';
 import 'package:toko_app/widgets/category_widget.dart';
+
+import '../providers/userApp_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,6 +24,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   TextEditingController searchController = TextEditingController();
+  String namaCostumer = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getNama();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,10 +225,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget logo() {
+    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Text(
-        "Aplikasi Toko",
+        "Selamat Datang, \n${namaCostumer}",
         style: primaryText.copyWith(
           color: Colors.white,
           fontSize: 16,
@@ -368,11 +382,22 @@ class _HomePageState extends State<HomePage> {
                 }).toList());
           } else {
             return Column(
-              children: [Text('No data')],
+              children: [
+                Text('No data'),
+              ],
             );
           }
         }),
       ),
     );
+  }
+
+  Future<void> getNama() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String name = pref.getString("name") ?? '';
+
+    setState(() {
+      namaCostumer = name;
+    });
   }
 }

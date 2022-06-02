@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:toko_app/models/product_model.dart';
+import '../providers/cart_provider.dart';
+import '../providers/userApp_provider.dart';
 import '../theme.dart';
 
-class DetailProductPage extends StatelessWidget {
+class DetailProductPage extends StatefulWidget {
   Map<String, dynamic>? product;
   DetailProductPage({Key? key, this.product}) : super(key: key);
+
+  @override
+  State<DetailProductPage> createState() => _DetailProductPageState();
+}
+
+class _DetailProductPageState extends State<DetailProductPage> {
+  int qty = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +53,14 @@ class DetailProductPage extends StatelessWidget {
           content(context),
         ],
       ),
-      bottomNavigationBar: bottomNavBar(),
+      bottomNavigationBar: bottomNavBar(context),
     );
   }
 
-  Widget bottomNavBar() {
+  Widget bottomNavBar(context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
+
     return Container(
       width: double.infinity,
       height: 92,
@@ -68,17 +81,26 @@ class DetailProductPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 27,
-            height: 27,
-            decoration: BoxDecoration(
-              border: Border.all(color: primaryColor),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.remove,
-                color: primaryColor,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (qty >= 2) {
+                  qty = qty - 1;
+                }
+              });
+            },
+            child: Container(
+              width: 27,
+              height: 27,
+              decoration: BoxDecoration(
+                border: Border.all(color: primaryColor),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.remove,
+                  color: primaryColor,
+                ),
               ),
             ),
           ),
@@ -92,7 +114,7 @@ class DetailProductPage extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                "2",
+                '${qty}',
                 style: primaryText.copyWith(
                   color: primaryColor,
                   fontSize: 18,
@@ -102,36 +124,59 @@ class DetailProductPage extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Container(
-            width: 27,
-            height: 27,
-            decoration: BoxDecoration(
-              border: Border.all(color: primaryColor),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.add,
-                color: primaryColor,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                qty = qty + 1;
+              });
+            },
+            child: Container(
+              width: 27,
+              height: 27,
+              decoration: BoxDecoration(
+                border: Border.all(color: primaryColor),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.add,
+                  color: primaryColor,
+                ),
               ),
             ),
           ),
           const SizedBox(width: 18),
           Expanded(
-            child: Container(
-              width: double.infinity,
-              height: 49,
-              decoration: BoxDecoration(
-                color: primaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  "+ Keranjang",
-                  style: primaryText.copyWith(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  cartProvider.addCartWithQty(
+                    ProductModel.fromJson(
+                        widget.product as Map<String, dynamic>),
+                    qty,
+                    context,
+                  );
+
+                  Navigator.pop(context);
+
+                  qty = 1;
+                });
+              },
+              child: Container(
+                width: double.infinity,
+                height: 49,
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    "+ Keranjang",
+                    style: primaryText.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -148,7 +193,7 @@ class DetailProductPage extends StatelessWidget {
       height: 326,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage(product!['imageUrl']),
+          image: NetworkImage(widget.product!['imageUrl']),
           fit: BoxFit.cover,
         ),
       ),
@@ -176,7 +221,7 @@ class DetailProductPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                product!['nama'],
+                widget.product!['nama'],
                 style: primaryText.copyWith(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -189,7 +234,7 @@ class DetailProductPage extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: RichText(
                 text: TextSpan(
-                  text: 'Rp ${product!['harga_jual'].toString()}',
+                  text: 'Rp ${widget.product!['harga_jual'].toString()}',
                   style: primaryText.copyWith(
                       color: primaryColor,
                       fontSize: 18,
@@ -246,7 +291,7 @@ class DetailProductPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                product!['deskripsi'],
+                widget.product!['deskripsi'],
                 style: primaryText.copyWith(fontSize: 13),
                 overflow: TextOverflow.clip,
               ),

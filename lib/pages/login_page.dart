@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toko_app/models/userApp_model.dart';
 import 'package:toko_app/pages/main_page.dart';
+import 'package:toko_app/providers/userApp_provider.dart';
 import 'package:toko_app/services/auth_service.dart';
 import 'package:toko_app/theme.dart';
 
@@ -14,10 +20,21 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late SharedPreferences preferences;
 
   bool _isSecure = true;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  Future init() async {
+    preferences = await SharedPreferences.getInstance();
+  }
 
   @override
   void dispose() {
@@ -35,6 +52,12 @@ class _LoginPageState extends State<LoginPage> {
           if (snapshot.hasError) {
             return Center(child: Text("Something went Wrong"));
           } else if (snapshot.hasData) {
+            // Map<String, dynamic> jsonData =
+            //     jsonDecode(preferences.getString('userData')!);
+            // UserAppProvider userProvider =
+            //     Provider.of<UserAppProvider>(context);
+            //
+            // userProvider.userApp = UserAppModel.fromJson(jsonData);
             return MainPage();
           } else {
             return Scaffold(
@@ -181,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      isCostumer(emailController.text.toString());
+                      isCostumer(emailController.text.toString(), context);
                     },
                     style: ElevatedButton.styleFrom(
                       primary: primaryColor,
@@ -258,9 +281,31 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  isCostumer(String email) {
+  isCostumer(String email, context) {
+    UserAppProvider userProvider =
+        Provider.of<UserAppProvider>(context, listen: false);
+
     CollectionReference customers = firestore.collection('customer');
     customers.doc(email).get().then((snapshot) {
+      var json = snapshot.data() as Map<String, dynamic>;
+      userProvider.userApp = UserAppModel.fromJson(json);
+
+      UserAppModel userRef = UserAppModel.fromJson(json);
+      // String userPrefJson = jsonEncode(userRef);
+      //
+      // preferences.setString('userData', userPrefJson);
+      preferences.setString('name', json['name'].toString());
+      preferences.setString('alamat', json['asal']['alamat'].toString());
+      preferences.setString('imageUrl', json['imageUrl'].toString());
+      preferences.setString('kecamatan', json['asal']['kecamatan'].toString());
+      preferences.setString('kelurahan', json['asal']['kelurahan'].toString());
+      preferences.setString('kota', json['asal']['kota'].toString());
+      preferences.setString('provinsi', json['asal']['provinsi'].toString());
+      preferences.setInt('id', int.parse(json['id'].toString()));
+      preferences.setString('email', json['email'].toString());
+      preferences.setString('phone', json['phone'].toString());
+      preferences.setString('status', json['status'].toString());
+
       if (snapshot.exists) {
         return AuthService().signIn(
           context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:toko_app/pages/user_profile_page.dart';
 import 'package:toko_app/services/auth_service.dart';
 import 'package:toko_app/widgets/setting_widget.dart';
 
@@ -18,7 +19,15 @@ class ProfilePage extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              SettingWidget(name: 'Akun', icon: 'assets/profile_icon.png'),
+              SettingWidget(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UserProfilePage()));
+                  },
+                  name: 'Akun',
+                  icon: 'assets/profile_icon.png'),
               SettingWidget(
                   onTap: () {
                     Navigator.pushNamed(context, '/promo');

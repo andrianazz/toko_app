@@ -1,9 +1,12 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/pages/cart_page.dart';
 import 'package:toko_app/pages/history_page.dart';
 import 'package:toko_app/pages/home_page.dart';
 import 'package:toko_app/pages/profile_page.dart';
+import 'package:toko_app/providers/userApp_provider.dart';
 import 'package:toko_app/theme.dart';
 
 class MainPage extends StatefulWidget {
@@ -16,6 +19,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
+  late SharedPreferences preferences;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,7 @@ class _MainPageState extends State<MainPage> {
             setState(() => _selectedIndex = index);
           },
           controller: _pageController,
-          children: const [
+          children: [
             HomePage(),
             HistoryPage(),
             CartPage(),

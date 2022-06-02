@@ -146,28 +146,4 @@ class _ProductPageState extends State<ProductPage> {
       ),
     );
   }
-
-  // Widget product() {
-  //   return Container(
-  //       margin: const EdgeInsets.symmetric(horizontal: 20),
-  //       child: Wrap(
-  //         runSpacing: 5,
-  //         spacing: 6,
-  //         children: mockProduct
-  //             .map((product) => ProductWidget(
-  //                   onTap: () {
-  //                     Navigator.push(
-  //                       context,
-  //                       MaterialPageRoute(
-  //                         builder: (context) => DetailProductPage(
-  //                           product: product,
-  //                         ),
-  //                       ),
-  //                     );
-  //                   },
-  //                   product: product,
-  //                 ))
-  //             .toList(),
-  //       ));
-  // }
 }

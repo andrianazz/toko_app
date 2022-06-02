@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:toko_app/models/history_model.dart';
+import 'package:toko_app/models/transaction_model.dart';
 
 import '../theme.dart';
 
 class HistoryWidget extends StatelessWidget {
   Function? onTap;
-  HistoryModel? history;
-  HistoryWidget({Key? key, this.onTap, this.history}) : super(key: key);
+
+  TransactionModel? transaction;
+  HistoryWidget({Key? key, this.onTap, this.transaction}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = history!.time!;
+    DateTime now = transaction!.date!;
     String convertTime =
         "${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year.toString()} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
 
@@ -31,24 +34,12 @@ class HistoryWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              width: 73,
-              height: 73,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(history!.imageUrl!),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${history!.item!.toString()} Produk',
+                    '${transaction!.totalProducts} Produk',
                     style: primaryText.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -60,7 +51,10 @@ class HistoryWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Rp. ${history!.total!.toString()}',
+                    NumberFormat.simpleCurrency(
+                      decimalDigits: 0,
+                      name: 'Rp. ',
+                    ).format(transaction!.totalTransaction!),
                     style: primaryText.copyWith(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -72,15 +66,15 @@ class HistoryWidget extends StatelessWidget {
             ),
             Chip(
               label: Text(
-                history!.status!.name,
+                transaction!.status!,
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
               ),
-              backgroundColor: history!.status!.name == 'berhasil'
+              backgroundColor: transaction!.status! == 'berhasil'
                   ? primaryColor
-                  : history!.status!.name == 'proses'
+                  : transaction!.status! == 'proses'
                       ? blueColor
                       : redColor,
             ),

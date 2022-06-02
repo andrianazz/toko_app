@@ -1,12 +1,41 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/models/history_model.dart';
+import 'package:toko_app/models/transaction_model.dart';
 import 'package:toko_app/pages/detail_history_page.dart';
 import 'package:toko_app/widgets/history_widget.dart';
 
+import '../providers/userApp_provider.dart';
 import '../theme.dart';
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({Key? key}) : super(key: key);
+class HistoryPage extends StatefulWidget {
+  HistoryPage({Key? key}) : super(key: key);
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    getId();
+  }
+
+  int idCostumer = 0;
+
+  Future<void> getId() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    int id = pref.getInt("id") ?? 0;
+
+    setState(() {
+      idCostumer = id;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,25 +54,6 @@ class HistoryPage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: secondaryColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 12,
-                  color: primaryColor,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
           Text(
             "Riwayat",
             style: primaryText.copyWith(fontSize: 24),
@@ -54,24 +64,43 @@ class HistoryPage extends StatelessWidget {
   }
 
   Widget content(context) {
+    CollectionReference transactions = firestore.collection('transactions');
+    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: mockHistory
-            .map((history) => Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: HistoryWidget(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const DetailHistoryPage()));
-                    },
-                    history: history,
-                  ),
-                ))
-            .toList(),
-      ),
+      child: StreamBuilder<QuerySnapshot>(
+          stream: transactions
+              .where('id_costumer', isEqualTo: idCostumer)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: snapshot.data!.docs.map((e) {
+                  TransactionModel trans = TransactionModel.fromJson(
+                      e.data() as Map<String, dynamic>);
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: HistoryWidget(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailHistoryPage(
+                                      transaction: trans,
+                                    )));
+                      },
+                      transaction: trans,
+                    ),
+                  );
+                }).toList(),
+              );
+            } else {
+              return Column(
+                children: [Text("No Data")],
+              );
+            }
+          }),
     );
   }
 }

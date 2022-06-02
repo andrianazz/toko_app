@@ -1,10 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:toko_app/models/transaction_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../theme.dart';
 
 class DetailHistoryPage extends StatelessWidget {
-  const DetailHistoryPage({Key? key}) : super(key: key);
+  TransactionModel? transaction;
+  DetailHistoryPage({Key? key, this.transaction}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -58,132 +63,73 @@ class DetailHistoryPage extends StatelessWidget {
   Widget content() {
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          height: 91,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12), color: cartColor),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 73,
-                    height: 73,
+        Column(
+          children: transaction!.items!
+              .map((item) => Container(
+                    width: double.infinity,
+                    height: 91,
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: AssetImage("assets/wortel.png"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        "Wortel",
-                        style:
-                            primaryText.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                            text: 'Rp 30.000',
-                            style: primaryText.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: primaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                        color: cartColor),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 73,
+                              height: 73,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: NetworkImage(item.imageUrl!),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                            children: [
-                              TextSpan(
-                                  text: "/ Kg",
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  item.name!,
                                   style: primaryText.copyWith(
-                                      fontSize: 10, color: greyColor))
-                            ]),
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Text(
-                "2 item",
-                style: primaryText.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            ],
-          ),
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: NumberFormat.simpleCurrency(
+                                      decimalDigits: 0,
+                                      name: 'Rp. ',
+                                    ).format(item.price!),
+                                    style: primaryText.copyWith(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Text(
+                          "${item.quantity} item",
+                          style: primaryText.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      ],
+                    ),
+                  ))
+              .toList(),
         ),
         SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          height: 91,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12), color: cartColor),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 73,
-                    height: 73,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: AssetImage("assets/wortel.png"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        "Wortel",
-                        style:
-                            primaryText.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                            text: 'Rp 30.000',
-                            style: primaryText.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: primaryColor,
-                            ),
-                            children: [
-                              TextSpan(
-                                  text: "/ Kg",
-                                  style: primaryText.copyWith(
-                                      fontSize: 10, color: greyColor))
-                            ]),
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Text(
-                "2 item",
-                style: primaryText.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            ],
-          ),
-        ),
-        SizedBox(height: 30),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 24),
           padding: const EdgeInsets.all(20),
@@ -236,7 +182,7 @@ class DetailHistoryPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Jl. Nelayan",
+                        transaction!.address!,
                         style: primaryText.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -301,12 +247,115 @@ class DetailHistoryPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Dana",
+                        transaction!.payment!,
                         style: primaryText.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 30),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: cartColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Ongkos Kirim",
+                style: primaryText.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: secondaryColor,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.delivery_dining,
+                                color: primaryColor,
+                                size: 28,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 25),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Ongkos Kirim",
+                            style: primaryText.copyWith(
+                              fontSize: 12,
+                              color: greyColor,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            NumberFormat.simpleCurrency(
+                              decimalDigits: 0,
+                              name: 'Rp. ',
+                            ).format(transaction!.ongkir!),
+                            style: primaryText.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      String total = NumberFormat.simpleCurrency(
+                        decimalDigits: 0,
+                        name: 'Rp. ',
+                      ).format(transaction!.totalTransaction!);
+                      String ongkir = NumberFormat.simpleCurrency(
+                        decimalDigits: 0,
+                        name: 'Rp. ',
+                      ).format(transaction!.ongkir!);
+                      await launch(
+                          'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir dari ${ongkir} untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total}');
+                    },
+                    child: Container(
+                      height: 30,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Center(
+                        child: Text(
+                          "Hubungi",
+                          style: primaryText.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
                   )
                 ],
               ),
@@ -322,7 +371,7 @@ class DetailHistoryPage extends StatelessWidget {
 
   Widget detail() {
     return Container(
-      height: 180,
+      height: 250,
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
       decoration: BoxDecoration(
@@ -330,6 +379,7 @@ class DetailHistoryPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,7 +391,10 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "Rp. 22.000",
+                NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(transaction!.totalTransaction! - transaction!.ongkir!),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -360,7 +413,7 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "3 Item",
+                "${transaction!.totalProducts!} Item",
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -379,7 +432,10 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "Rp. 5.000",
+                NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(transaction!.ongkir!),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -403,7 +459,10 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "Rp. 27.000",
+                NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(transaction!.totalTransaction!),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -411,6 +470,23 @@ class DetailHistoryPage extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 10),
+          Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                "Bayar Sekarang",
+                style: primaryText.copyWith(
+                  color: primaryColor,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

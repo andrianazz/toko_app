@@ -53,7 +53,7 @@ class ProductWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      product!.name!,
+                      "nama",
                       style: primaryText.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -63,7 +63,7 @@ class ProductWidget extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          'Rp ${product!.price.toString()}',
+                          'harga_jual',
                           style: primaryText.copyWith(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
