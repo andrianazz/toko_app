@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/models/category_model.dart';
+import 'package:toko_app/pages/article_page.dart';
 import 'package:toko_app/pages/detail_article_page.dart';
 import 'package:toko_app/pages/detail_product_page.dart';
 import 'package:toko_app/theme.dart';
@@ -128,28 +129,37 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Artikel',
+                'Artikel Terbaru',
                 style: primaryText.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              Row(
-                children: [
-                  Text(
-                    "Selengkapnya",
-                    style: primaryText.copyWith(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: primaryColor,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ArticlePage(),
+                      ));
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      "Selengkapnya",
+                      style: primaryText.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: primaryColor,
+                      ),
                     ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    color: primaryColor,
-                    size: 20,
-                  )
-                ],
+                    const Icon(
+                      Icons.arrow_forward_ios_outlined,
+                      color: primaryColor,
+                      size: 20,
+                    )
+                  ],
+                ),
               )
             ],
           ),
@@ -282,21 +292,33 @@ class _HomePageState extends State<HomePage> {
   Widget promo() {
     CollectionReference promos = firestore.collection('promo');
     return StreamBuilder<QuerySnapshot>(
-        stream: promos.limit(5).snapshots(),
+        stream: promos.orderBy("id", descending: true).limit(5).snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return CarouselSlider(
               items: snapshot.data!.docs.map((e) {
                 Map<String, dynamic> promo = e.data() as Map<String, dynamic>;
 
-                return Container(
-                  width: 400,
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: NetworkImage(promo['imageUrl']),
-                      fit: BoxFit.fill,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailArticlePage(
+                          promo: promo,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 400,
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                        image: NetworkImage(promo['imageUrl']),
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
                 );

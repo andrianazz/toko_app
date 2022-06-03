@@ -9,7 +9,7 @@ class DetailArticlePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Artikel"),
+        title: Text("Artikel Terkait"),
         centerTitle: true,
         backgroundColor: primaryColor,
         leading: IconButton(

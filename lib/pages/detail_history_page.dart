@@ -471,18 +471,21 @@ class DetailHistoryPage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          Container(
-            height: 56,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Center(
-              child: Text(
-                "Bayar Sekarang",
-                style: primaryText.copyWith(
-                  color: primaryColor,
-                  fontWeight: FontWeight.w800,
+          Visibility(
+            visible: (transaction!.ongkir == 0) ? false : true,
+            child: Container(
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(
+                  "Bayar Sekarang",
+                  style: primaryText.copyWith(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),

@@ -72,6 +72,7 @@ class _HistoryPageState extends State<HistoryPage> {
       child: StreamBuilder<QuerySnapshot>(
           stream: transactions
               .where('id_costumer', isEqualTo: idCostumer)
+              .orderBy("id", descending: true)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {

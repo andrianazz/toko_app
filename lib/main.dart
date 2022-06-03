@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:toko_app/pages/article_page.dart';
 import 'package:toko_app/pages/getstarted_page.dart';
 import 'package:toko_app/pages/login_page.dart';
 import 'package:toko_app/pages/main_page.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
           '/getstarted': (context) => const GetStartedPage(),
           '/login': (context) => const LoginPage(),
           '/signup': (context) => const SignUpPage(),
-          '/promo': (context) => const PromoPage(),
+          '/artikel': (context) => const ArticlePage(),
         },
         home: const SplashPage(),
       ),

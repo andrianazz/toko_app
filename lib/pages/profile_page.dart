@@ -1,19 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/pages/user_profile_page.dart';
 import 'package:toko_app/services/auth_service.dart';
 import 'package:toko_app/widgets/setting_widget.dart';
 
 import '../theme.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    getPref();
+  }
+
+  String imageUrl = '';
+  String name = '';
+
+  Future<void> getPref() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? imageString = pref.getString("imageUrl");
+    String? nameString = pref.getString("name");
+
+    setState(() {
+      imageUrl = imageString!;
+      name = nameString!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
         const SizedBox(height: 30),
-        header(),
+        Column(
+          children: [
+            Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: greyColor,
+                  width: 5,
+                ),
+                image: DecorationImage(
+                  image: NetworkImage(imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              name,
+              style: primaryText.copyWith(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+              ),
+            )
+          ],
+        ),
         const SizedBox(height: 40),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -30,9 +82,9 @@ class ProfilePage extends StatelessWidget {
                   icon: 'assets/profile_icon.png'),
               SettingWidget(
                   onTap: () {
-                    Navigator.pushNamed(context, '/promo');
+                    Navigator.pushNamed(context, '/artikel');
                   },
-                  name: 'Promo',
+                  name: 'Artikel',
                   icon: 'assets/promo_icon.png'),
               SettingWidget(name: 'Bantuan', icon: 'assets/help_icon.png'),
               SettingWidget(name: 'Tentang', icon: 'assets/about_icon.png'),
@@ -42,39 +94,6 @@ class ProfilePage extends StatelessWidget {
         button(context),
         const SizedBox(height: 30),
       ],
-    );
-  }
-
-  Widget header() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: secondaryColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 12,
-                  color: primaryColor,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          Text(
-            "Pengaturan",
-            style: primaryText.copyWith(fontSize: 24),
-          ),
-        ],
-      ),
     );
   }
 

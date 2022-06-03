@@ -274,7 +274,7 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
               Text(
-                "Rp. 2.000",
+                "?",
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -292,7 +292,7 @@ class _CartPageState extends State<CartPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Total",
+                "Total (with ppn)",
                 style: primaryText.copyWith(
                   color: Colors.white,
                 ),
@@ -301,8 +301,7 @@ class _CartPageState extends State<CartPage> {
                 NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(
-                    cartProvider.getTotal() + 2000 + Random().nextInt(499)),
+                ).format(cartProvider.getTotal() + 0 + Random().nextInt(499)),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -318,7 +317,7 @@ class _CartPageState extends State<CartPage> {
                     context,
                     cartProvider.carts,
                     selectedPayment,
-                    2000,
+                    0,
                     cartProvider.getTotal(),
                     cartProvider.carts.map((e) => e.toJson()).toList(),
                     alamat,
