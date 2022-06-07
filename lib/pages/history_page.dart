@@ -26,11 +26,11 @@ class _HistoryPageState extends State<HistoryPage> {
     getId();
   }
 
-  int idCostumer = 0;
+  String idCostumer = '';
 
   Future<void> getId() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    int id = pref.getInt("id") ?? 0;
+    String id = pref.getString("id") ?? '';
 
     setState(() {
       idCostumer = id;

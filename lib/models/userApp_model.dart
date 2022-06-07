@@ -3,7 +3,7 @@ import 'package:toko_app/models/asal_model.dart';
 class UserAppModel {
   AsalModel? asal;
   String? email;
-  int? id;
+  String? id;
   String? imageUrl;
   String? name;
   String? phone;

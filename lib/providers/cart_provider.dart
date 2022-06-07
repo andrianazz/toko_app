@@ -34,6 +34,7 @@ class CartProvider with ChangeNotifier {
     if (exist.isEmpty) {
       _carts.add(ItemModel(
         id: _carts.length,
+        idProduk: product.id,
         idSupplier: product.supplier!['id'],
         imageUrl: product.imageUrl,
         zone: product.supplier!['daerah'],

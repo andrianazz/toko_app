@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:toko_app/pages/upload_photo_page.dart';
+import 'package:uuid/uuid.dart';
 
 import '../theme.dart';
 
@@ -464,7 +465,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       );
 
                       customers.doc(emailController.text).set({
-                        'id': custLength,
+                        'id': Uuid().v5(Uuid.NAMESPACE_URL,
+                            emailController.text.toString()),
                         'name': nameController.text,
                         'phone': phoneController.text,
                         'asal': {

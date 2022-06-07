@@ -33,12 +33,12 @@ class _CartPageState extends State<CartPage> {
     getAlamat();
   }
 
-  int idCostumer = 0;
+  String idCostumer = '';
   String alamat = '';
 
   Future<void> getId() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    int id = pref.getInt("id") ?? 0;
+    String id = pref.getString("id") ?? '';
 
     setState(() {
       idCostumer = id;
@@ -171,33 +171,10 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget header() {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: secondaryColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: IconButton(
-                onPressed: () {
-                  print(cartProvider.carts[0].id);
-                },
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 12,
-                  color: primaryColor,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
           Text(
             "Keranjang",
             style: primaryText.copyWith(fontSize: 24),
@@ -314,14 +291,15 @@ class _CartPageState extends State<CartPage> {
             onTap: () {
               setState(() {
                 tProvider.addTransactions(
-                    context,
-                    cartProvider.carts,
-                    selectedPayment,
-                    0,
-                    cartProvider.getTotal(),
-                    cartProvider.carts.map((e) => e.toJson()).toList(),
-                    alamat,
-                    idCostumer);
+                  context,
+                  cartProvider.carts,
+                  selectedPayment,
+                  0,
+                  cartProvider.getTotal(),
+                  cartProvider.carts.map((e) => e.toJson()).toList(),
+                  alamat,
+                  idCostumer,
+                );
 
                 cartProvider.carts.clear();
                 tProvider.transactions.clear();

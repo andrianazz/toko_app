@@ -301,7 +301,7 @@ class _LoginPageState extends State<LoginPage> {
       preferences.setString('kelurahan', json['asal']['kelurahan'].toString());
       preferences.setString('kota', json['asal']['kota'].toString());
       preferences.setString('provinsi', json['asal']['provinsi'].toString());
-      preferences.setInt('id', int.parse(json['id'].toString()));
+      preferences.setString('id', json['id']);
       preferences.setString('email', json['email'].toString());
       preferences.setString('phone', json['phone'].toString());
       preferences.setString('status', json['status'].toString());

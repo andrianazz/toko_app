@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:toko_app/models/item_model.dart';
 import 'package:toko_app/models/userApp_model.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/transaction_model.dart';
 import '../theme.dart';
@@ -27,7 +28,7 @@ class TransactionProvider with ChangeNotifier {
     int total,
     List<Map<String, dynamic>> carts2,
     String address,
-    int idCostumer,
+    String idCostumer,
   ) async {
     CollectionReference ref = firestore.collection('transactions');
     ref.get().then((snap) {
@@ -35,7 +36,7 @@ class TransactionProvider with ChangeNotifier {
 
       _transactions.add(
         TransactionModel(
-            id: snap.docs.length,
+            id: Uuid().v1(),
             idCashier: 1,
             payment: payment,
             date: DateTime.now(),
@@ -49,7 +50,7 @@ class TransactionProvider with ChangeNotifier {
             keterangan: ''),
       );
 
-      transac.doc('PR-${transactions[0].id.toString()}').set({
+      transac.doc('${transactions[0].id.toString()}').set({
         'id': transactions[0].id,
         'tanggal': transactions[0].date,
         'id_costumer': transactions[0].idCostumer,

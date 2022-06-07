@@ -1,5 +1,6 @@
 class ItemModel {
   int? id;
+  String? idProduk;
   String? name;
   String? imageUrl;
   int? capital;
@@ -7,11 +8,12 @@ class ItemModel {
   int? price;
   int? quantity;
   int? total;
-  int? idSupplier;
+  String? idSupplier;
   String? zone;
 
   ItemModel({
     this.id,
+    this.idProduk,
     this.name,
     this.imageUrl,
     this.capital,
@@ -24,7 +26,8 @@ class ItemModel {
   });
 
   ItemModel.fromJson(Map<String, dynamic> json) {
-    id = json['id_produk'];
+    id = json['id'];
+    idProduk = json['id_produk'];
     name = json['nama_produk'];
     imageUrl = json['imageUrl'] ?? '';
     capital = json['harga_modal'];
@@ -38,7 +41,8 @@ class ItemModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id_produk': id,
+      'id': id,
+      'id_produk': idProduk,
       'nama_produk': name,
       'imageUrl': imageUrl ?? '',
       'harga_modal': capital,

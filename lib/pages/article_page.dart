@@ -32,7 +32,7 @@ class ArticlePage extends StatelessWidget {
               Text(
                 "Artikel Terbaru",
                 style: primaryText.copyWith(
-                  fontSize: 24,
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -92,7 +92,7 @@ class ArticlePage extends StatelessWidget {
                                   Text(
                                     artikel['title'],
                                     style: primaryText.copyWith(
-                                      fontSize: 18,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w800,
                                     ),
                                     maxLines: 2,
@@ -127,7 +127,7 @@ class ArticlePage extends StatelessWidget {
               Text(
                 "Semua Artikel",
                 style: primaryText.copyWith(
-                  fontSize: 24,
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -170,7 +170,7 @@ class ArticlePage extends StatelessWidget {
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 230,
+                                    width: 180,
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -178,21 +178,24 @@ class ArticlePage extends StatelessWidget {
                                         Text(
                                           artikel['title'],
                                           style: primaryText.copyWith(
-                                            fontSize: 18,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.w700,
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.clip,
                                         ),
-                                        Text(
-                                          artikel['description'],
-                                          style: primaryText.copyWith(
-                                            fontSize: 12,
-                                            color: artikelColor,
-                                            fontWeight: FontWeight.w500,
+                                        Container(
+                                          width: 150,
+                                          child: Text(
+                                            artikel['description'],
+                                            style: primaryText.copyWith(
+                                              fontSize: 12,
+                                              color: artikelColor,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
                                         )
                                       ],
                                     ),

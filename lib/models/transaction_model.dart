@@ -1,9 +1,9 @@
 import 'item_model.dart';
 
 class TransactionModel {
-  int? id;
+  String? id;
   DateTime? date;
-  int? idCostumer;
+  String? idCostumer;
   String? address;
   List<ItemModel>? items;
   int? totalProducts;
@@ -66,9 +66,9 @@ class TransactionModel {
 
 List<TransactionModel> mockTransaction = [
   TransactionModel(
-    id: 1,
+    id: "1",
     date: DateTime.now(),
-    idCostumer: 1,
+    idCostumer: "1",
     address: 'Jl. Nelayan',
     items: [
       ItemModel(
@@ -79,7 +79,7 @@ List<TransactionModel> mockTransaction = [
         price: 6000,
         quantity: 2,
         total: 12000,
-        idSupplier: 1,
+        idSupplier: "1",
         zone: 'Pekanbaru',
       ),
       ItemModel(
@@ -90,7 +90,7 @@ List<TransactionModel> mockTransaction = [
         price: 3500,
         quantity: 1,
         total: 3500,
-        idSupplier: 1,
+        idSupplier: "1",
         zone: 'Pekanbaru',
       ),
       ItemModel(
@@ -101,7 +101,7 @@ List<TransactionModel> mockTransaction = [
         price: 12000,
         quantity: 1,
         total: 12000,
-        idSupplier: 1,
+        idSupplier: "1",
         zone: 'Pekanbaru',
       ),
     ],
@@ -110,9 +110,9 @@ List<TransactionModel> mockTransaction = [
     idCashier: 1,
   ),
   TransactionModel(
-    id: 1,
+    id: "1",
     date: DateTime.now(),
-    idCostumer: 1,
+    idCostumer: "1",
     address: 'Jl. Rumbai',
     items: [
       ItemModel(
@@ -123,7 +123,7 @@ List<TransactionModel> mockTransaction = [
         price: 6000,
         quantity: 1,
         total: 6000,
-        idSupplier: 1,
+        idSupplier: "1",
         zone: 'Pekanbaru',
       ),
       ItemModel(
@@ -134,7 +134,7 @@ List<TransactionModel> mockTransaction = [
         price: 3500,
         quantity: 2,
         total: 7000,
-        idSupplier: 1,
+        idSupplier: "1",
         zone: 'Pekanbaru',
       ),
       ItemModel(
@@ -145,7 +145,7 @@ List<TransactionModel> mockTransaction = [
         price: 12000,
         quantity: 1,
         total: 12000,
-        idSupplier: 1,
+        idSupplier: "1",
         zone: 'Pekanbaru',
       ),
     ],

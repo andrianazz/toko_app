@@ -7,7 +7,6 @@ import 'package:toko_app/pages/getstarted_page.dart';
 import 'package:toko_app/pages/login_page.dart';
 import 'package:toko_app/pages/main_page.dart';
 import 'package:toko_app/pages/product_page.dart';
-import 'package:toko_app/pages/promo_page.dart';
 import 'package:toko_app/pages/sign_up_page.dart';
 import 'package:toko_app/pages/splash_page.dart';
 import 'package:toko_app/providers/cart_provider.dart';
