@@ -36,7 +36,7 @@ class CartProvider with ChangeNotifier {
         id: _carts.length,
         idProduk: product.id,
         idSupplier: product.supplier!['id'],
-        imageUrl: product.imageUrl,
+        imageUrl: product.imageUrl![0],
         zone: product.supplier!['daerah'],
         name: product.nama,
         capital: product.harga_modal,

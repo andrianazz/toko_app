@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:toko_app/models/product_model.dart';
 
 import '../theme.dart';
 
@@ -44,7 +43,7 @@ class BestSaleWidget extends StatelessWidget {
                   topLeft: Radius.circular(10),
                 ),
                 image: DecorationImage(
-                  image: NetworkImage(product!['imageUrl']),
+                  image: NetworkImage(product!['imageUrl'][0]),
                   fit: BoxFit.cover,
                 ),
               ),

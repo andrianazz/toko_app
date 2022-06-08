@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toko_app/models/product_model.dart';
 import '../providers/cart_provider.dart';
-import '../providers/userApp_provider.dart';
 import '../theme.dart';
 
 class DetailProductPage extends StatefulWidget {
@@ -59,7 +58,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
   Widget bottomNavBar(context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
-    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
 
     return Container(
       width: double.infinity,
@@ -193,7 +191,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
       height: 326,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage(widget.product!['imageUrl']),
+          image: NetworkImage(widget.product!['imageUrl'][0]),
           fit: BoxFit.cover,
         ),
       ),

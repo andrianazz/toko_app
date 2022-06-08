@@ -40,7 +40,7 @@ class ProductWidget extends StatelessWidget {
                   topLeft: Radius.circular(10),
                 ),
                 image: DecorationImage(
-                  image: NetworkImage(product!.imageUrl!),
+                  image: NetworkImage(product!.imageUrl![0]),
                   fit: BoxFit.cover,
                 ),
               ),

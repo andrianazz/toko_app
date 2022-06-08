@@ -10,7 +10,6 @@ class ArticlePage extends StatelessWidget {
   Widget build(BuildContext context) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference article = firestore.collection("promo");
-    var lastDoc = article.orderBy("id", descending: true).limit(1).snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -168,6 +167,8 @@ class ArticlePage extends StatelessWidget {
                                     )
                                   ]),
                               child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     width: 180,
