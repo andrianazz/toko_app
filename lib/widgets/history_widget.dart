@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:toko_app/models/history_model.dart';
 import 'package:toko_app/models/transaction_model.dart';
 
 import '../theme.dart';
@@ -69,14 +68,18 @@ class HistoryWidget extends StatelessWidget {
                 transaction!.status!,
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: transaction!.status! == 'Bayar'
+                      ? Colors.black
+                      : Colors.white,
                 ),
               ),
-              backgroundColor: transaction!.status! == 'berhasil'
+              backgroundColor: transaction!.status! == 'Selesai'
                   ? primaryColor
-                  : transaction!.status! == 'proses'
+                  : transaction!.status! == 'Proses'
                       ? blueColor
-                      : redColor,
+                      : transaction!.status! == 'Bayar'
+                          ? orangeColor
+                          : redColor,
             ),
           ],
         ),

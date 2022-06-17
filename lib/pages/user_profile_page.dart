@@ -1,9 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../providers/userApp_provider.dart';
 import '../theme.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -14,6 +13,8 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   bool isSecure = true;
   bool isSecure2 = true;
 
@@ -61,6 +62,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference costumers = firestore.collection('customer');
     return Scaffold(
       body: ListView(
         children: [
@@ -311,36 +313,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Email",
-                      style: primaryText.copyWith(
-                        fontWeight: FontWeight.bold,
+                SizedBox(height: 30),
+                Container(
+                  height: 54,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      primary: secondaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: primaryColor, width: 2),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: cartColor,
-                          ),
-                        ),
-                        fillColor: Colors.white,
-                        hintText: 'Masukkan Email...',
+                    child: Text(
+                      "Ubah Email",
+                      style: primaryText.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: primaryColor,
+                        fontSize: 18,
                       ),
-                    )
-                  ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
                 Container(
                   height: 54,
                   width: double.infinity,
@@ -368,7 +364,57 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   height: 54,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+
+                      costumers.doc(emailController.text.toString()).update({
+                        'name': nameController.text.toString(),
+                        'phone': phoneController.text.toString(),
+                        'asal': {
+                          'alamat': alamatController.text.toString(),
+                          'kecamatan': kecController.text.toString(),
+                          'kelurahan': kelController.text.toString(),
+                          'kota': kotaController.text.toString(),
+                          'provinsi': provController.text.toString(),
+                        },
+                      });
+
+                      preferences.setString(
+                          'name', nameController.text.toString());
+                      preferences.setString(
+                          'alamat', alamatController.text.toString());
+                      preferences.setString(
+                          'kecamatan', kecController.text.toString());
+                      preferences.setString(
+                          'kelurahan', kelController.text.toString());
+                      preferences.setString(
+                          'kota', kotaController.text.toString());
+                      preferences.setString(
+                          'provinsi', provController.text.toString());
+                      preferences.setString(
+                          'phone', phoneController.text.toString());
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(milliseconds: 1000),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Text(
+                                "Merubah Data. Silahkan Tunggu .....",
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                          backgroundColor: primaryColor,
+                        ),
+                      );
+
+                      Navigator.pop(context);
+                    },
                     style: ElevatedButton.styleFrom(
                       primary: primaryColor,
                       shape: RoundedRectangleBorder(

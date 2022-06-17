@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:toko_app/models/item_model.dart';
-import 'package:toko_app/models/userApp_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/transaction_model.dart';
@@ -37,7 +36,7 @@ class TransactionProvider with ChangeNotifier {
       _transactions.add(
         TransactionModel(
             id: Uuid().v1(),
-            idCashier: 1,
+            idCashier: "7885863e-2bc1-54d7-bc65-4f039daa2532",
             payment: payment,
             date: DateTime.now(),
             address: address,
@@ -53,7 +52,8 @@ class TransactionProvider with ChangeNotifier {
       transac.doc('${transactions[0].id.toString()}').set({
         'id': transactions[0].id,
         'tanggal': transactions[0].date,
-        'id_costumer': transactions[0].idCostumer,
+        'bayar': 0,
+        'id_customer': transactions[0].idCostumer,
         'address': transactions[0].address,
         'items': carts2,
         'total_produk': transactions[0].totalProducts,

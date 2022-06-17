@@ -1,19 +1,15 @@
-import 'dart:convert';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/models/category_model.dart';
+import 'package:toko_app/models/product_model.dart';
 import 'package:toko_app/pages/article_page.dart';
 import 'package:toko_app/pages/detail_article_page.dart';
 import 'package:toko_app/pages/detail_product_page.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/best_sale_widget.dart';
 import 'package:toko_app/widgets/category_widget.dart';
-
-import '../providers/userApp_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -170,9 +166,9 @@ class _HomePageState extends State<HomePage> {
           width: double.infinity,
           height: 120,
           child: StreamBuilder<QuerySnapshot>(
-            stream: promos.orderBy('id', descending: true).limit(5).snapshots(),
+            stream:
+                promos.orderBy('date', descending: true).limit(5).snapshots(),
             builder: ((context, snapshot) {
-              int promoIndex = -1;
               if (snapshot.hasData) {
                 return ListView(
                   scrollDirection: Axis.horizontal,
@@ -192,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         width: 150,
                         height: 119,
-                        margin: EdgeInsets.only(left: 20),
+                        margin: EdgeInsets.only(left: 10, right: 10),
                         child: Column(
                           children: [
                             Container(
@@ -235,8 +231,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget logo() {
-    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Text(
@@ -292,13 +286,12 @@ class _HomePageState extends State<HomePage> {
   Widget promo() {
     CollectionReference promos = firestore.collection('promo');
     return StreamBuilder<QuerySnapshot>(
-        stream: promos.orderBy("id", descending: true).limit(5).snapshots(),
+        stream: promos.orderBy("date", descending: true).limit(5).snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return CarouselSlider(
               items: snapshot.data!.docs.map((e) {
                 Map<String, dynamic> promo = e.data() as Map<String, dynamic>;
-
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -376,7 +369,10 @@ class _HomePageState extends State<HomePage> {
       height: 250,
       width: double.infinity,
       child: StreamBuilder<QuerySnapshot>(
-        stream: products.orderBy('id', descending: true).limit(5).snapshots(),
+        stream: products
+            .orderBy('stok_tanggal', descending: true)
+            .limit(5)
+            .snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return ListView(
@@ -384,16 +380,17 @@ class _HomePageState extends State<HomePage> {
                 children: snapshot.data!.docs.map((e) {
                   Map<String, dynamic> product =
                       e.data() as Map<String, dynamic>;
+                  ProductModel productModel = ProductModel.fromJson(product);
 
                   return Container(
-                    margin: EdgeInsets.only(left: 20, right: 0),
+                    margin: EdgeInsets.only(left: 10, right: 10),
                     child: BestSaleWidget(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => DetailProductPage(
-                              product: product,
+                              product: productModel,
                             ),
                           ),
                         );

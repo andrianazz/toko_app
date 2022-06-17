@@ -8,7 +8,7 @@ class TransactionModel {
   List<ItemModel>? items;
   int? totalProducts;
   int? totalTransaction;
-  int? idCashier;
+  String? idCashier;
   String? payment;
   int? ongkir;
   String? status;
@@ -32,7 +32,7 @@ class TransactionModel {
   TransactionModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     date = json['tanggal'].toDate();
-    idCostumer = json['id_costumer'];
+    idCostumer = json['id_customer'];
     address = json['address'];
     items = json['items']
         .map<ItemModel>((item) => ItemModel.fromJson(item))
@@ -50,7 +50,7 @@ class TransactionModel {
     return {
       'id': id,
       'tanggal': date.toString(),
-      'id_costumer': idCostumer,
+      'id_customer': idCostumer,
       'address': address,
       'items': items!.map((item) => item.toJson()).toList(),
       'total_produk': totalProducts,
@@ -107,7 +107,7 @@ List<TransactionModel> mockTransaction = [
     ],
     totalProducts: 4,
     totalTransaction: 27500,
-    idCashier: 1,
+    idCashier: "7885863e-2bc1-54d7-bc65-4f039daa2532",
   ),
   TransactionModel(
     id: "1",
@@ -151,6 +151,6 @@ List<TransactionModel> mockTransaction = [
     ],
     totalProducts: 4,
     totalTransaction: 25000,
-    idCashier: 1,
+    idCashier: "7885863e-2bc1-54d7-bc65-4f039daa2532",
   ),
 ];

@@ -1,11 +1,14 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:toko_app/models/product_model.dart';
 import '../providers/cart_provider.dart';
 import '../theme.dart';
 
 class DetailProductPage extends StatefulWidget {
-  Map<String, dynamic>? product;
+  ProductModel? product;
   DetailProductPage({Key? key, this.product}) : super(key: key);
 
   @override
@@ -13,6 +16,7 @@ class DetailProductPage extends StatefulWidget {
 }
 
 class _DetailProductPageState extends State<DetailProductPage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   int qty = 1;
 
   @override
@@ -149,8 +153,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
               onTap: () {
                 setState(() {
                   cartProvider.addCartWithQty(
-                    ProductModel.fromJson(
-                        widget.product as Map<String, dynamic>),
+                    widget.product!,
                     qty,
                     context,
                   );
@@ -186,14 +189,26 @@ class _DetailProductPageState extends State<DetailProductPage> {
   }
 
   Widget image() {
-    return Container(
-      width: double.infinity,
-      height: 326,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage(widget.product!['imageUrl'][0]),
-          fit: BoxFit.cover,
-        ),
+    return CarouselSlider(
+      items: widget.product!.imageUrl!
+          .map(
+            (e) => Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(e),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          )
+          .toList(),
+      options: CarouselOptions(
+        height: 290,
+        initialPage: 0,
+        autoPlay: true,
+        autoPlayInterval: const Duration(seconds: 5),
+        viewportFraction: 1,
       ),
     );
   }
@@ -219,7 +234,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                widget.product!['nama'],
+                widget.product!.nama!,
                 style: primaryText.copyWith(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -230,22 +245,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
             ),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: RichText(
-                text: TextSpan(
-                  text: 'Rp ${widget.product!['harga_jual'].toString()}',
-                  style: primaryText.copyWith(
-                      color: primaryColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700),
-                  children: [
-                    TextSpan(
-                      text: '/ kg',
-                      style: primaryText.copyWith(
-                        fontSize: 14,
-                        color: greyColor,
-                      ),
-                    ),
-                  ],
+              child: Text(
+                NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(widget.product!.harga_jual),
+                style: primaryText.copyWith(
+                  color: primaryColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -289,7 +297,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                widget.product!['deskripsi'],
+                widget.product!.deskripsi!,
                 style: primaryText.copyWith(fontSize: 13),
                 overflow: TextOverflow.clip,
               ),

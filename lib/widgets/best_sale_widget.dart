@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../theme.dart';
 
@@ -67,32 +68,29 @@ class BestSaleWidget extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Rp ${product!['harga_jual'].toString()}',
+                        NumberFormat.simpleCurrency(
+                          decimalDigits: 0,
+                          name: 'Rp. ',
+                        ).format(product!['harga_jual']),
                         style: primaryText.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
                           color: primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        '/Kg',
-                        style: primaryText.copyWith(
-                          fontSize: 10,
-                          color: greyColor,
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'Rp ${product!['harga_jual']}',
+                    '${product!['deskripsi']}',
                     style: primaryText.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                       color: greyColor,
-                      decoration: TextDecoration.lineThrough,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

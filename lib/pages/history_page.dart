@@ -1,13 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toko_app/models/history_model.dart';
 import 'package:toko_app/models/transaction_model.dart';
 import 'package:toko_app/pages/detail_history_page.dart';
 import 'package:toko_app/widgets/history_widget.dart';
 
-import '../providers/userApp_provider.dart';
 import '../theme.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -65,14 +62,13 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget content(context) {
     CollectionReference transactions = firestore.collection('transactions');
-    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
       child: StreamBuilder<QuerySnapshot>(
           stream: transactions
-              .where('id_costumer', isEqualTo: idCostumer)
-              .orderBy("id", descending: true)
+              .where('id_customer', isEqualTo: idCostumer)
+              .orderBy("tanggal", descending: true)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {

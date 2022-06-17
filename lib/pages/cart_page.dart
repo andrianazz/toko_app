@@ -11,7 +11,6 @@ import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/cart_widget.dart';
 
 import '../providers/transaction_provider.dart';
-import '../providers/userApp_provider.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -48,9 +47,13 @@ class _CartPageState extends State<CartPage> {
   Future<void> getAlamat() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     String address = pref.getString("alamat") ?? '';
+    String kecamatan = pref.getString("kecamatan") ?? '';
+    String kelurahan = pref.getString("kelurahan") ?? '';
+    String kota = pref.getString("kota") ?? '';
+    String provinsi = pref.getString("provinsi") ?? '';
 
     setState(() {
-      alamat = address;
+      alamat = '$address, $kecamatan, $kelurahan, $kota, $provinsi';
     });
   }
 
@@ -187,8 +190,6 @@ class _CartPageState extends State<CartPage> {
   Widget checkout(context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     TransactionProvider tProvider = Provider.of<TransactionProvider>(context);
-    CollectionReference transac = firestore.collection('transactions');
-    UserAppProvider userProvider = Provider.of<UserAppProvider>(context);
 
     return Container(
       height: 244,

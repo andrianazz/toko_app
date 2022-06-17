@@ -39,7 +39,7 @@ class ArticlePage extends StatelessWidget {
               StreamBuilder<QuerySnapshot>(
                 stream: article
                     .limit(1)
-                    .orderBy("id", descending: true)
+                    .orderBy("date", descending: true)
                     .snapshots(),
                 builder: (_, snapshot) {
                   if (snapshot.hasData) {
@@ -60,7 +60,7 @@ class ArticlePage extends StatelessWidget {
                             );
                           },
                           child: Container(
-                              height: 250,
+                              height: 220,
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                   color: Colors.white,
@@ -74,6 +74,7 @@ class ArticlePage extends StatelessWidget {
                                     )
                                   ]),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
                                     height: 130,
@@ -87,7 +88,6 @@ class ArticlePage extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  Spacer(),
                                   Text(
                                     artikel['title'],
                                     style: primaryText.copyWith(
@@ -97,7 +97,6 @@ class ArticlePage extends StatelessWidget {
                                     maxLines: 2,
                                     overflow: TextOverflow.clip,
                                   ),
-                                  Spacer(),
                                   Text(
                                     "Inisiatif GBN ini ingin mengajak masyarakat lebih mencintai dan memilih produk buah asli tanah air, yang ditawarkan lewat beragam promo menarik belanja buah segar lokal selama periode 9-31 Agustus 2021.  Blibli merupakan salah satu e-commerce yang bekerja sama dengan GBN 2021 dan turut serta menyelenggarakan kegiatan bazar secara online yang ditawarkan melalui display di laman promosi Galeri Indonesia x Gerakan Buah Nusantara agar pelanggan dapat dengan mudah membeli buah segar nusantara dengan kualitas baik dengan harga bersahabat.  “Ini bukan kali pertama, Blibli mendukung upaya pemerintah dalam menggerakkan masyarakat untuk Bangga Buatan Indonesia, yang kali ini berupa rangkaian Gelar Buah Nasional 2021. Dengan mendukung program GBN 2021, Blibli ingin mengajak pelanggan",
                                     style: primaryText.copyWith(
@@ -132,7 +131,7 @@ class ArticlePage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               StreamBuilder<QuerySnapshot>(
-                  stream: article.orderBy("id", descending: true).snapshots(),
+                  stream: article.orderBy("date", descending: true).snapshots(),
                   builder: (_, snapshot) {
                     if (snapshot.hasData) {
                       return Column(

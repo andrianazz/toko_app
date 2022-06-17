@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:toko_app/models/transaction_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../theme.dart';
 
@@ -19,7 +18,7 @@ class DetailHistoryPage extends StatelessWidget {
           const SizedBox(height: 30),
           header(context),
           const SizedBox(height: 50),
-          content(),
+          content(context),
         ],
       ),
     );
@@ -60,7 +59,7 @@ class DetailHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget content() {
+  Widget content(context) {
     return Column(
       children: [
         Column(
@@ -95,10 +94,15 @@ class DetailHistoryPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text(
-                                  item.name!,
-                                  style: primaryText.copyWith(
-                                      fontWeight: FontWeight.w700),
+                                Container(
+                                  width: 150,
+                                  child: Text(
+                                    item.name!,
+                                    style: primaryText.copyWith(
+                                        fontWeight: FontWeight.w700),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.clip,
+                                  ),
                                 ),
                                 RichText(
                                   text: TextSpan(
@@ -181,10 +185,15 @@ class DetailHistoryPage extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Text(
-                        transaction!.address!,
-                        style: primaryText.copyWith(
-                          fontWeight: FontWeight.w600,
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: Text(
+                          transaction!.address!,
+                          style: primaryText.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -327,49 +336,52 @@ class DetailHistoryPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      String total = NumberFormat.simpleCurrency(
-                        decimalDigits: 0,
-                        name: 'Rp. ',
-                      ).format(transaction!.totalTransaction!);
-                      String ongkir = NumberFormat.simpleCurrency(
-                        decimalDigits: 0,
-                        name: 'Rp. ',
-                      ).format(transaction!.ongkir!);
-                      await launch(
-                          'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir dari ${ongkir} untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total}');
-                    },
-                    child: Container(
-                      height: 30,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                          color: primaryColor,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Center(
-                        child: Text(
-                          "Hubungi",
-                          style: primaryText.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
+                  transaction!.status == "Proses" ||
+                          transaction!.status == "Bayar"
+                      ? GestureDetector(
+                          onTap: () async {
+                            String total = NumberFormat.simpleCurrency(
+                              decimalDigits: 0,
+                              name: 'Rp. ',
+                            ).format(transaction!.totalTransaction!);
+                            String ongkir = NumberFormat.simpleCurrency(
+                              decimalDigits: 0,
+                              name: 'Rp. ',
+                            ).format(transaction!.ongkir!);
+                            await launch(
+                                'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir dari ${ongkir} untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total}');
+                          },
+                          child: Container(
+                            height: 30,
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                                color: primaryColor,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Center(
+                              child: Text(
+                                "Hubungi",
+                                style: primaryText.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  )
+                        )
+                      : SizedBox()
                 ],
               ),
             ],
           ),
         ),
         SizedBox(height: 30),
-        detail(),
+        detail(context),
         SizedBox(height: 30),
       ],
     );
   }
 
-  Widget detail() {
+  Widget detail(context) {
     return Container(
       height: 250,
       margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -472,19 +484,85 @@ class DetailHistoryPage extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Visibility(
-            visible: (transaction!.ongkir == 0) ? false : true,
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+            visible: (transaction!.ongkir == 0) ? true : false,
+            child: GestureDetector(
+              onTap: () async {
+                String total = NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(transaction!.totalTransaction!);
+
+                await launch(
+                    'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total}');
+              },
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Text(
+                    "Hubungi Penjual",
+                    style: primaryText.copyWith(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
               ),
-              child: Center(
-                child: Text(
-                  "Bayar Sekarang",
-                  style: primaryText.copyWith(
-                    color: primaryColor,
-                    fontWeight: FontWeight.w800,
+            ),
+          ),
+          Visibility(
+            visible:
+                (transaction!.ongkir! > 0 && transaction!.status != 'Selesai'),
+            child: GestureDetector(
+              onTap: () async {
+                String total = NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(transaction!.totalTransaction!);
+                await launch(
+                    'https://wa.me/+628979036650?text=Halo, Saya ingin membayar untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total} \n\n'
+                    'Berikut bukti pembayaran saya: \n\n');
+              },
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Text(
+                    "Bayar Sekarang",
+                    style: primaryText.copyWith(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: transaction!.status == 'Selesai',
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Text(
+                    "Kembali ke Riwayat",
+                    style: primaryText.copyWith(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
