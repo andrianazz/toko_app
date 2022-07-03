@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toko_app/pages/contact_page.dart';
+import 'package:toko_app/pages/privacy_page.dart';
 import 'package:toko_app/pages/user_profile_page.dart';
 import 'package:toko_app/services/auth_service.dart';
 import 'package:toko_app/widgets/setting_widget.dart';
@@ -86,8 +88,30 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                   name: 'Artikel',
                   icon: 'assets/promo_icon.png'),
-              SettingWidget(name: 'Bantuan', icon: 'assets/help_icon.png'),
-              SettingWidget(name: 'Tentang', icon: 'assets/about_icon.png'),
+              SettingWidget(
+                name: 'Bantuan',
+                icon: 'assets/help_icon.png',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContactPage(),
+                    ),
+                  );
+                },
+              ),
+              SettingWidget(
+                name: 'Tentang',
+                icon: 'assets/about_icon.png',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PrivacyPage(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

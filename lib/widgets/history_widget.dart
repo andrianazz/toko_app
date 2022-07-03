@@ -65,7 +65,10 @@ class HistoryWidget extends StatelessWidget {
             ),
             Chip(
               label: Text(
-                transaction!.status!,
+                (transaction!.status == 'Proses'
+                        ? '1/3'
+                        : (transaction!.status == 'Bayar' ? '2/3' : '3/3')) +
+                    ' ${transaction!.status!}',
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w700,
                   color: transaction!.status! == 'Bayar'

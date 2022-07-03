@@ -33,14 +33,18 @@ class CategoryWidget extends StatelessWidget {
                 color: bgCategory.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(15),
                 image: DecorationImage(
-                  image: AssetImage(category!.imageUrl!),
+                  image: NetworkImage(category!.imageUrl!),
                 ),
               ),
             ),
-            Text(
-              category!.name!,
-              style: primaryText.copyWith(fontSize: 9),
-              textAlign: TextAlign.center,
+            Container(
+              width: 50,
+              child: Text(
+                category!.name!,
+                style: primaryText.copyWith(fontSize: 9),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

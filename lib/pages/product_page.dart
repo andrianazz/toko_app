@@ -10,7 +10,8 @@ import '../models/category_model.dart';
 import '../widgets/best_sale_widget.dart';
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({Key? key}) : super(key: key);
+  String? name;
+  ProductPage({Key? key, this.name}) : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -19,8 +20,6 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   TextEditingController searchController = TextEditingController();
-  late int indexCategory = -1;
-  int selectedIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +91,21 @@ class _ProductPageState extends State<ProductPage> {
                           color: Colors.black54,
                           fontSize: 12,
                         ),
+                        onTap: () {
+                          setState(() {
+                            searchController.clear();
+                            widget.name = null;
+                          });
+                        },
+                        onChanged: (value) {
+                          Future.delayed(Duration(seconds: 3), () {
+                            setState(() {
+                              searchController.text = value[0].toUpperCase() +
+                                  value.substring(1).toLowerCase();
+                            });
+                          });
+                          print(searchController.text);
+                        },
                         decoration: InputDecoration(
                           contentPadding:
                               const EdgeInsets.symmetric(vertical: 8),
@@ -115,29 +129,42 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget category() {
+    CollectionReference tags = firestore.collection('tags');
+
     return SizedBox(
       width: double.infinity,
       height: 97,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          Row(
-            children: mockCategory.map((category) {
-              return Container(
-                margin: const EdgeInsets.only(right: 10),
-                child: CategoryProductWidget(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = category.id!;
-                    });
-                  },
-                  category: category,
-                  isSelected: selectedIndex == category.id!,
-                ),
-              );
-            }).toList(),
-          ),
-        ],
+      child: StreamBuilder<QuerySnapshot>(
+        stream: tags.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView(
+              scrollDirection: Axis.horizontal,
+              children: snapshot.data!.docs.map((e) {
+                CategoryModel cat =
+                    CategoryModel.fromJson(e.data() as Map<String, dynamic>);
+
+                return Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  child: CategoryProductWidget(
+                    onTap: () {
+                      setState(() {
+                        widget.name = cat.name!;
+                        searchController.clear();
+                      });
+                    },
+                    category: cat,
+                    isSelected: widget.name == cat.name,
+                  ),
+                );
+              }).toList(),
+            );
+          } else {
+            return Center(
+              child: Text('No Data'),
+            );
+          }
+        },
       ),
     );
   }
@@ -147,7 +174,13 @@ class _ProductPageState extends State<ProductPage> {
     return SizedBox(
       width: double.infinity,
       child: StreamBuilder<QuerySnapshot>(
-        stream: products.orderBy('nama').snapshots(),
+        stream: searchController.text.isNotEmpty
+            ? products
+                .where('nama', isGreaterThanOrEqualTo: searchController.text)
+                .snapshots()
+            : widget.name == null
+                ? products.orderBy('nama').snapshots()
+                : products.where('tag', arrayContains: widget.name).snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return Wrap(

@@ -1,7 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:toko_app/pages/change_password_page.dart';
+import 'package:toko_app/services/auth_service.dart';
+import 'package:uuid/uuid.dart';
 
 import '../theme.dart';
 
@@ -16,9 +21,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   bool isSecure = true;
-  bool isSecure2 = true;
-
-  String imageUrl = '';
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -28,12 +30,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
   TextEditingController kotaController = TextEditingController();
   TextEditingController provController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController passController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     getAll();
   }
+
+  String oldImage =
+      'https://firebasestorage.googleapis.com/v0/b/phr-marketplace.appspot.com/o/no-image.png?alt=media&token=370795d8-34c8-454d-8e7b-6a297e404bb3';
+  String? newImage;
 
   Future<void> getAll() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -56,7 +63,38 @@ class _UserProfilePageState extends State<UserProfilePage> {
       kotaController.text = kota!;
       provController.text = provinsi!;
       emailController.text = email!;
-      imageUrl = image!;
+      newImage = image!;
+    });
+  }
+
+  void imageUpload(String name) async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+
+    var postUri = Uri.parse("https://galerilamriau.com/api/image");
+    var headers = {
+      "Authorization":
+          "Bearer 2wNAfr1QBPn2Qckv55u5b4GN2jrgfnC8Y7cZO04yNpXciQHrj9NaWQhs1FSMo0Jd",
+      "Content-Type": "multipart/form-data",
+      "Accept": "application/json",
+    };
+
+    http.MultipartRequest request = new http.MultipartRequest("POST", postUri);
+    request.headers.addAll(headers);
+    http.MultipartFile multipartFile =
+        await http.MultipartFile.fromPath('image', image!.path);
+    request.files.add(multipartFile);
+    http.StreamedResponse response = await request.send();
+
+    print(response.statusCode);
+    var responseData = await response.stream.toBytes();
+    var result = String.fromCharCodes(responseData);
+    var res = result.substring(12, result.length - 2).replaceAll(r"\", "");
+
+    setState(() {
+      newImage = res;
+      print(newImage);
     });
   }
 
@@ -64,6 +102,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     CollectionReference costumers = firestore.collection('customer');
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+        backgroundColor: primaryColor,
+      ),
       body: ListView(
         children: [
           Container(
@@ -80,10 +122,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       border: Border.all(color: greyColor, width: 4),
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: NetworkImage(imageUrl),
+                        image: NetworkImage(newImage ?? oldImage),
                         fit: BoxFit.cover,
                       ),
                     ),
+                  ),
+                ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      imageUpload(emailController.text.toString());
+
+                      setState(() {});
+                    },
+                    child: Text("Change Image"),
                   ),
                 ),
                 Text(
@@ -313,35 +365,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
-                Container(
-                  height: 54,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      primary: secondaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: primaryColor, width: 2),
-                      ),
-                    ),
-                    child: Text(
-                      "Ubah Email",
-                      style: primaryText.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: primaryColor,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
+                SizedBox(height: 20),
                 const SizedBox(height: 10),
                 Container(
                   height: 54,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChangePasswordPage(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       primary: secondaryColor,
                       shape: RoundedRectangleBorder(
@@ -378,6 +415,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           'kota': kotaController.text.toString(),
                           'provinsi': provController.text.toString(),
                         },
+                        'imageUrl': newImage ?? oldImage,
                       });
 
                       preferences.setString(
@@ -394,6 +432,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           'provinsi', provController.text.toString());
                       preferences.setString(
                           'phone', phoneController.text.toString());
+                      preferences.setString('imageUrl', newImage ?? oldImage);
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

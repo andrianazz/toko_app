@@ -46,7 +46,54 @@ class AuthService {
     await auth.createUserWithEmailAndPassword(email: email, password: pass);
   }
 
+  Future updatePassword(BuildContext context, String pass) async {
+    await auth.currentUser!.updatePassword(pass);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: Duration(milliseconds: 1000),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(width: 20),
+            Text(
+              "Mengubah Password. Mohon Tunggu .....",
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        backgroundColor: primaryColor,
+      ),
+    );
+  }
+
+  Future updatePasswordwithEmail(BuildContext context, String email) async {
+    await auth.sendPasswordResetEmail(email: email);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: Duration(milliseconds: 1000),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(width: 20),
+            Text(
+              "Mengirimkan. Silahkan Cek Email terkait .....",
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        backgroundColor: primaryColor,
+      ),
+    );
+  }
+
   Future signOut() async {
     await auth.signOut();
+  }
+
+  Future deleteAkun() async {
+    await auth.currentUser!.delete();
   }
 }

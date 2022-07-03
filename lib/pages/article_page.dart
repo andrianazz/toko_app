@@ -81,6 +81,10 @@ class ArticlePage extends StatelessWidget {
                                     margin: EdgeInsets.only(bottom: 12),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: greyColor,
+                                        width: 0.5,
+                                      ),
                                       image: DecorationImage(
                                         image:
                                             NetworkImage(artikel['imageUrl']),
@@ -131,7 +135,10 @@ class ArticlePage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               StreamBuilder<QuerySnapshot>(
-                  stream: article.orderBy("date", descending: true).snapshots(),
+                  stream: article
+                      .limit(10)
+                      .orderBy("date", descending: true)
+                      .snapshots(),
                   builder: (_, snapshot) {
                     if (snapshot.hasData) {
                       return Column(
@@ -205,6 +212,8 @@ class ArticlePage extends StatelessWidget {
                                     height: 100,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: greyColor, width: 0.5),
                                       image: DecorationImage(
                                         image:
                                             NetworkImage(artikel['imageUrl']),

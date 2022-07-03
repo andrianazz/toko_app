@@ -30,18 +30,23 @@ class CategoryProductWidget extends StatelessWidget {
                 color: isSelected ? primaryColor : Colors.transparent,
               ),
               image: DecorationImage(
-                image: AssetImage(category!.imageUrl!),
+                fit: BoxFit.contain,
+                image: NetworkImage(category!.imageUrl!),
               ),
             ),
           ),
-          Text(
-            category!.name!,
-            style: primaryText.copyWith(
-              fontSize: 12,
-              color: isSelected ? primaryColor : greyColor,
-              fontWeight: FontWeight.w800,
+          Container(
+            width: 50,
+            child: Text(
+              category!.name!,
+              style: primaryText.copyWith(
+                fontSize: 12,
+                color: isSelected ? primaryColor : greyColor,
+                fontWeight: FontWeight.w800,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
           isSelected == true

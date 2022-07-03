@@ -7,8 +7,10 @@ import 'package:toko_app/models/product_model.dart';
 import 'package:toko_app/pages/article_page.dart';
 import 'package:toko_app/pages/detail_article_page.dart';
 import 'package:toko_app/pages/detail_product_page.dart';
+import 'package:toko_app/pages/product_page.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/best_sale_widget.dart';
+import 'package:toko_app/widgets/category_product_widget.dart';
 import 'package:toko_app/widgets/category_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   TextEditingController searchController = TextEditingController();
   String namaCostumer = '';
+  String? selectedCat = '';
 
   @override
   void initState() {
@@ -95,22 +98,32 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              Row(
-                children: [
-                  Text(
-                    "Selengkapnya",
-                    style: primaryText.copyWith(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: primaryColor,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductPage(),
                     ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    color: primaryColor,
-                    size: 20,
-                  )
-                ],
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      "Selengkapnya",
+                      style: primaryText.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: primaryColor,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_outlined,
+                      color: primaryColor,
+                      size: 20,
+                    )
+                  ],
+                ),
               )
             ],
           ),
@@ -261,7 +274,14 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
-                controller: searchController,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductPage(),
+                    ),
+                  );
+                },
                 style: primaryText.copyWith(
                   color: Colors.black54,
                   fontSize: 12,
@@ -330,36 +350,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget category() {
+    CollectionReference tags = firestore.collection('tags');
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CategoryWidget(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/productPage');
-                  },
-                  category: mockCategory[0]),
-              CategoryWidget(category: mockCategory[1]),
-              CategoryWidget(category: mockCategory[2]),
-              CategoryWidget(category: mockCategory[3]),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CategoryWidget(category: mockCategory[4]),
-              CategoryWidget(category: mockCategory[5]),
-              CategoryWidget(category: mockCategory[6]),
-              CategoryWidget(category: mockCategory[7]),
-            ],
-          ),
-        ],
-      ),
-    );
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        child: StreamBuilder<QuerySnapshot>(
+            stream: tags.limit(8).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  runAlignment: WrapAlignment.center,
+                  spacing: 20,
+                  runSpacing: 10,
+                  children: snapshot.data!.docs.map((e) {
+                    CategoryModel category = CategoryModel.fromJson(
+                        e.data() as Map<String, dynamic>);
+
+                    return CategoryWidget(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductPage(
+                                name: category.name,
+                              ),
+                            ));
+                      },
+                      category: CategoryModel(
+                        name: category.name,
+                        imageUrl: category.imageUrl,
+                      ),
+                    );
+                  }).toList(),
+                );
+              } else {
+                return Center(
+                  child: Text("No Data"),
+                );
+              }
+            }));
   }
 
   Widget bestSale() {
