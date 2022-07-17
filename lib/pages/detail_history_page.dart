@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,9 +7,31 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../theme.dart';
 
-class DetailHistoryPage extends StatelessWidget {
+class DetailHistoryPage extends StatefulWidget {
   TransactionModel? transaction;
   DetailHistoryPage({Key? key, this.transaction}) : super(key: key);
+
+  @override
+  State<DetailHistoryPage> createState() => _DetailHistoryPageState();
+}
+
+class _DetailHistoryPageState extends State<DetailHistoryPage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String phone = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getInit();
+  }
+
+  Future getInit() async {
+    await firestore.collection('settings').doc('galerilam').get().then((value) {
+      setState(() {
+        phone = value['telepon'];
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +86,7 @@ class DetailHistoryPage extends StatelessWidget {
     return Column(
       children: [
         Column(
-          children: transaction!.items!
+          children: widget.transaction!.items!
               .map((item) => Container(
                     width: double.infinity,
                     height: 91,
@@ -188,7 +211,7 @@ class DetailHistoryPage extends StatelessWidget {
                       Container(
                         width: MediaQuery.of(context).size.width * 0.5,
                         child: Text(
-                          transaction!.address!,
+                          widget.transaction!.address!,
                           style: primaryText.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -256,7 +279,7 @@ class DetailHistoryPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        transaction!.payment!,
+                        widget.transaction!.payment!,
                         style: primaryText.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -327,7 +350,7 @@ class DetailHistoryPage extends StatelessWidget {
                             NumberFormat.simpleCurrency(
                               decimalDigits: 0,
                               name: 'Rp. ',
-                            ).format(transaction!.ongkir!),
+                            ).format(widget.transaction!.ongkir!),
                             style: primaryText.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -336,35 +359,44 @@ class DetailHistoryPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  transaction!.status == "Proses" ||
-                          transaction!.status == "Bayar"
+                  widget.transaction!.status == "Proses" ||
+                          widget.transaction!.status == "Bayar"
                       ? GestureDetector(
                           onTap: () async {
                             String total = NumberFormat.simpleCurrency(
                               decimalDigits: 0,
                               name: 'Rp. ',
-                            ).format(transaction!.totalTransaction!);
+                            ).format(widget.transaction!.totalTransaction!);
                             String ongkir = NumberFormat.simpleCurrency(
                               decimalDigits: 0,
                               name: 'Rp. ',
-                            ).format(transaction!.ongkir!);
+                            ).format(widget.transaction!.ongkir!);
                             await launch(
-                                'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir dari ${ongkir} untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total}');
+                                'https://wa.me/${phone}?text=Halo, Saya ingin nego ongkir dari ${ongkir} untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total}');
                           },
                           child: Container(
                             height: 30,
-                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                                 color: primaryColor,
                                 borderRadius: BorderRadius.circular(8)),
-                            child: Center(
-                              child: Text(
-                                "Hubungi",
-                                style: primaryText.copyWith(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.chat,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w800,
+                                  size: 12,
                                 ),
-                              ),
+                                SizedBox(width: 5),
+                                Text(
+                                  "Hubungi",
+                                  style: primaryText.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         )
@@ -382,8 +414,9 @@ class DetailHistoryPage extends StatelessWidget {
   }
 
   Widget detail(context) {
+    CollectionReference transactions = firestore.collection("transactions");
+
     return Container(
-      height: 250,
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
       decoration: BoxDecoration(
@@ -406,7 +439,8 @@ class DetailHistoryPage extends StatelessWidget {
                 NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(transaction!.totalTransaction! - transaction!.ongkir!),
+                ).format(widget.transaction!.totalTransaction! -
+                    widget.transaction!.ongkir!),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -425,7 +459,7 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "${transaction!.totalProducts!} Item",
+                "${widget.transaction!.totalProducts!} Item",
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -447,7 +481,7 @@ class DetailHistoryPage extends StatelessWidget {
                 NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(transaction!.ongkir!),
+                ).format(widget.transaction!.ongkir!),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -474,7 +508,7 @@ class DetailHistoryPage extends StatelessWidget {
                 NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(transaction!.totalTransaction!),
+                ).format(widget.transaction!.totalTransaction!),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -484,16 +518,16 @@ class DetailHistoryPage extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Visibility(
-            visible: (transaction!.ongkir == 0) ? true : false,
+            visible: (widget.transaction!.ongkir == 0) ? true : false,
             child: GestureDetector(
               onTap: () async {
                 String total = NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(transaction!.totalTransaction!);
+                ).format(widget.transaction!.totalTransaction!);
 
                 await launch(
-                    'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total}');
+                    'https://wa.me/+628979036650?text=Halo, Saya ingin nego ongkir untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total}');
               },
               child: Container(
                 height: 56,
@@ -501,29 +535,39 @@ class DetailHistoryPage extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Text(
-                    "Hubungi Penjual",
-                    style: primaryText.copyWith(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.chat,
                       color: primaryColor,
-                      fontWeight: FontWeight.w800,
                     ),
-                  ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Hubungi Penjual",
+                      style: primaryText.copyWith(
+                        color: primaryColor,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
           Visibility(
-            visible:
-                (transaction!.ongkir! > 0 && transaction!.status != 'Selesai'),
+            visible: (widget.transaction!.ongkir! > 0 &&
+                widget.transaction!.status != 'Selesai'),
             child: GestureDetector(
               onTap: () async {
                 String total = NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(transaction!.totalTransaction!);
+                ).format(widget.transaction!.totalTransaction!);
                 await launch(
-                    'https://wa.me/+628979036650?text=Halo, Saya ingin membayar untuk transaksi ${transaction!.id!} berjumlah ${transaction!.totalProducts!} item dengan total = ${total} \n\n'
+                    'https://wa.me/+628979036650?text=Halo, Saya ingin membayar untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total} \n\n'
                     'Berikut bukti pembayaran saya: \n\n');
               },
               child: Container(
@@ -545,7 +589,7 @@ class DetailHistoryPage extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible: transaction!.status == 'Selesai',
+            visible: widget.transaction!.status == 'Selesai',
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
@@ -567,7 +611,74 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
+          Visibility(
+            visible: (widget.transaction!.ongkir == 0) ? true : false,
+            child: SizedBox(
+              height: 10,
+            ),
+          ),
+          Visibility(
+            visible: (widget.transaction!.ongkir == 0) ? true : false,
+            child: GestureDetector(
+              onTap: () async {
+                showDialog(
+                    context: context,
+                    builder: (_) => CupertinoAlertDialog(
+                          title: Text('Konfirmasi membatalkan transaksi'),
+                          content: Text(
+                              'Apa kamu yakin inging menghapus Transaksi ini?'),
+                          actions: [
+                            CupertinoDialogAction(
+                              child: Text('Batal'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            CupertinoDialogAction(
+                              child: Text('Hapus'),
+                              onPressed: () {
+                                transactions
+                                    .doc(widget.transaction!.id!)
+                                    .delete();
+
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ));
+              },
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: redColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.cancel,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Batalkan Pemesanan",
+                      style: primaryText.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
         ],
       ),
     );

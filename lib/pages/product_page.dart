@@ -20,6 +20,7 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   TextEditingController searchController = TextEditingController();
+  String searchText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +87,7 @@ class _ProductPageState extends State<ProductPage> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
-                        controller: searchController,
+                        textCapitalization: TextCapitalization.sentences,
                         style: primaryText.copyWith(
                           color: Colors.black54,
                           fontSize: 12,
@@ -94,17 +95,18 @@ class _ProductPageState extends State<ProductPage> {
                         onTap: () {
                           setState(() {
                             searchController.clear();
+                            searchText = '';
                             widget.name = null;
                           });
                         },
                         onChanged: (value) {
-                          Future.delayed(Duration(seconds: 3), () {
+                          Future.delayed(Duration(milliseconds: 1200), () {
                             setState(() {
-                              searchController.text = value[0].toUpperCase() +
+                              searchText = value[0].toUpperCase() +
                                   value.substring(1).toLowerCase();
                             });
                           });
-                          print(searchController.text);
+                          print(searchText);
                         },
                         decoration: InputDecoration(
                           contentPadding:
@@ -174,13 +176,19 @@ class _ProductPageState extends State<ProductPage> {
     return SizedBox(
       width: double.infinity,
       child: StreamBuilder<QuerySnapshot>(
-        stream: searchController.text.isNotEmpty
+        stream: searchText.isNotEmpty
             ? products
-                .where('nama', isGreaterThanOrEqualTo: searchController.text)
+                .where('nama', isGreaterThanOrEqualTo: searchText)
+                .where('sisa_stok', isGreaterThanOrEqualTo: 1)
                 .snapshots()
             : widget.name == null
-                ? products.orderBy('nama').snapshots()
-                : products.where('tag', arrayContains: widget.name).snapshots(),
+                ? products
+                    .where('sisa_stok', isGreaterThanOrEqualTo: 1)
+                    .snapshots()
+                : products
+                    .where('tag', arrayContains: widget.name)
+                    .where('sisa_stok', isGreaterThanOrEqualTo: 1)
+                    .snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return Wrap(

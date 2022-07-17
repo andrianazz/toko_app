@@ -21,8 +21,17 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  int kodeUnik = Random().nextInt(499);
 
-  List payments = ["TUNAI", 'EDC', 'DANA', 'GRAB', 'OVO', 'TRANSFER'];
+  List payments = [
+    'Dana',
+    "GoPay",
+    'ShopeePay',
+    'OVO',
+    'Mandiri',
+    "BNI",
+    "BRI"
+  ];
   String selectedPayment = "TUNAI";
 
   @override
@@ -109,42 +118,135 @@ class _CartPageState extends State<CartPage> {
               )
             : SizedBox(),
         cartProvider.carts.isNotEmpty
-            ? Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.center,
-                  children: payments
-                      .map((pay) => GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedPayment = pay;
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 15),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: pay == selectedPayment
-                                        ? primaryColor
-                                        : greyColor),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                pay,
-                                style: primaryText.copyWith(
-                                  fontSize: 18,
-                                  color: pay == selectedPayment
-                                      ? primaryColor
-                                      : Colors.black,
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
+            ? Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: ExpansionTile(
+                      tilePadding: EdgeInsets.all(0),
+                      title: Text(
+                        "Pembayaran Manual",
+                        style: primaryText.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      children: [
+                        Column(
+                          children: payments
+                              .take(4)
+                              .map((pay) => GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedPayment = pay;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 15),
+                                      margin: EdgeInsets.symmetric(vertical: 5),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: pay == selectedPayment
+                                                ? primaryColor
+                                                : greyColor),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            pay,
+                                            style: primaryText.copyWith(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: pay == selectedPayment
+                                                  ? primaryColor
+                                                  : Colors.black,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Kirimkan ke akun ${pay} secara manual melalui aplikasi ${pay}",
+                                            style: primaryText.copyWith(
+                                              fontSize: 10,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: ExpansionTile(
+                      tilePadding: EdgeInsets.all(0),
+                      title: Text(
+                        "Pembayaran Otomatis",
+                        style: primaryText.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      children: [
+                        Column(
+                          children: payments
+                              .skip(4)
+                              .map((pay) => GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedPayment = pay;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 15),
+                                      margin: EdgeInsets.symmetric(vertical: 5),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: pay == selectedPayment
+                                                ? primaryColor
+                                                : greyColor),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            pay,
+                                            style: primaryText.copyWith(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: pay == selectedPayment
+                                                  ? primaryColor
+                                                  : Colors.black,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Kirimkan ke akun ${pay} secara otomatis melalui aplikasi ${pay}",
+                                            style: primaryText.copyWith(
+                                              fontSize: 10,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
               )
             : SizedBox(),
         const SizedBox(height: 30),
@@ -279,7 +381,7 @@ class _CartPageState extends State<CartPage> {
                 NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(cartProvider.getTotal() + 0 + Random().nextInt(499)),
+                ).format(cartProvider.getTotal() + 0 + kodeUnik),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,

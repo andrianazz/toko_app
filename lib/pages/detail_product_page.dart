@@ -129,7 +129,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
           GestureDetector(
             onTap: () {
               setState(() {
-                qty = qty + 1;
+                if (widget.product!.stok! > qty) {
+                  qty = qty + 1;
+                }
               });
             },
             child: Container(
@@ -233,14 +235,33 @@ class _DetailProductPageState extends State<DetailProductPage> {
             //Tag
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                widget.product!.nama!,
-                style: primaryText.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-                overflow: TextOverflow.clip,
-                maxLines: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 200,
+                    child: Text(
+                      widget.product!.nama!,
+                      style: primaryText.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      overflow: TextOverflow.clip,
+                      maxLines: 1,
+                    ),
+                  ),
+                  Text(
+                    widget.product!.stok! <= 5
+                        ? "Sisa Stok < 5"
+                        : widget.product!.stok! <= 20
+                            ? 'Sisa Stok < 20'
+                            : '',
+                    style: primaryText.copyWith(
+                      fontSize: 12,
+                      color: redColor,
+                    ),
+                  )
+                ],
               ),
             ),
             Container(

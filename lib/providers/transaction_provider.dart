@@ -5,6 +5,7 @@ import 'package:toko_app/models/item_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/transaction_model.dart';
+import '../pages/detail_history_page.dart';
 import '../theme.dart';
 
 class TransactionProvider with ChangeNotifier {
@@ -82,6 +83,24 @@ class TransactionProvider with ChangeNotifier {
           backgroundColor: primaryColor,
         ),
       );
+
+      firestore
+          .collection("transactions")
+          .orderBy('tanggal', descending: true)
+          .limit(1)
+          .get()
+          .then((value) {
+        value.docs.map((e) {
+          TransactionModel trans =
+              TransactionModel.fromJson(e.data() as Map<String, dynamic>);
+          return Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DetailHistoryPage(transaction: trans),
+            ),
+          );
+        }).toList();
+      });
     });
   }
 }
