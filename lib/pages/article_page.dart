@@ -39,6 +39,7 @@ class ArticlePage extends StatelessWidget {
               StreamBuilder<QuerySnapshot>(
                 stream: article
                     .limit(1)
+                    .where('publikasi', isEqualTo: true)
                     .orderBy("date", descending: true)
                     .snapshots(),
                 builder: (_, snapshot) {
@@ -137,6 +138,7 @@ class ArticlePage extends StatelessWidget {
               StreamBuilder<QuerySnapshot>(
                   stream: article
                       .limit(10)
+                      .where('publikasi', isEqualTo: true)
                       .orderBy("date", descending: true)
                       .snapshots(),
                   builder: (_, snapshot) {

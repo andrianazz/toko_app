@@ -47,6 +47,8 @@ dependencies:
   url_launcher:
   shared_preferences: ^2.0.15
   uuid:
+  webview_flutter: ^3.0.4
+  http:
 
 
 dev_dependencies:

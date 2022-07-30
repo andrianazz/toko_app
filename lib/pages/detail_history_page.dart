@@ -559,7 +559,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
           ),
           Visibility(
             visible: (widget.transaction!.ongkir! > 0 &&
-                widget.transaction!.status != 'Selesai'),
+                widget.transaction!.status != "Selesai"),
             child: GestureDetector(
               onTap: () async {
                 String total = NumberFormat.simpleCurrency(
@@ -578,7 +578,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                 ),
                 child: Center(
                   child: Text(
-                    "Bayar Sekarang",
+                    "Kirim Bukti Bayar",
                     style: primaryText.copyWith(
                       color: primaryColor,
                       fontWeight: FontWeight.w800,
@@ -627,7 +627,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                     builder: (_) => CupertinoAlertDialog(
                           title: Text('Konfirmasi membatalkan transaksi'),
                           content: Text(
-                              'Apa kamu yakin inging menghapus Transaksi ini?'),
+                              'Apa kamu yakin ingin menghapus Transaksi ini?'),
                           actions: [
                             CupertinoDialogAction(
                               child: Text('Batal'),

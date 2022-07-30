@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toko_app/providers/cart_provider.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/cart_widget.dart';
-
 import '../providers/transaction_provider.dart';
 
 class CartPage extends StatefulWidget {
@@ -28,20 +27,23 @@ class _CartPageState extends State<CartPage> {
     "GoPay",
     'ShopeePay',
     'OVO',
-    'Mandiri',
+    'MidTrans',
     "BNI",
     "BRI"
   ];
-  String selectedPayment = "TUNAI";
+  String selectedPayment = "";
 
   @override
   void initState() {
     super.initState();
     getId();
-    getAlamat();
+    getAll();
   }
 
   String idCostumer = '';
+  String nama = '';
+  String email = '';
+  String phone = '';
   String alamat = '';
 
   Future<void> getId() async {
@@ -53,8 +55,11 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  Future<void> getAlamat() async {
+  Future<void> getAll() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
+    String nameString = pref.getString("name") ?? '';
+    String emailString = pref.getString("email") ?? '';
+    String phoneString = pref.getString("phone") ?? '';
     String address = pref.getString("alamat") ?? '';
     String kecamatan = pref.getString("kecamatan") ?? '';
     String kelurahan = pref.getString("kelurahan") ?? '';
@@ -63,6 +68,9 @@ class _CartPageState extends State<CartPage> {
 
     setState(() {
       alamat = '$address, $kecamatan, $kelurahan, $kota, $provinsi';
+      nama = '$nameString';
+      email = '$emailString';
+      phone = '$phoneString';
     });
   }
 
@@ -139,6 +147,7 @@ class _CartPageState extends State<CartPage> {
                                     onTap: () {
                                       setState(() {
                                         selectedPayment = pay;
+                                        print(selectedPayment);
                                       });
                                     },
                                     child: Container(
@@ -202,6 +211,7 @@ class _CartPageState extends State<CartPage> {
                                     onTap: () {
                                       setState(() {
                                         selectedPayment = pay;
+                                        print(selectedPayment);
                                       });
                                     },
                                     child: Container(
@@ -391,19 +401,22 @@ class _CartPageState extends State<CartPage> {
           ),
           const SizedBox(height: 9),
           GestureDetector(
-            onTap: () {
-              setState(() {
-                tProvider.addTransactions(
+            onTap: () async {
+              tProvider.addTransactions(
                   context,
                   cartProvider.carts,
                   selectedPayment,
                   0,
-                  cartProvider.getTotal(),
+                  kodeUnik,
+                  cartProvider.getTotal() + kodeUnik + 0,
                   cartProvider.carts.map((e) => e.toJson()).toList(),
                   alamat,
                   idCostumer,
-                );
+                  nama,
+                  email,
+                  phone);
 
+              setState(() {
                 cartProvider.carts.clear();
                 tProvider.transactions.clear();
               });

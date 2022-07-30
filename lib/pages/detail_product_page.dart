@@ -152,19 +152,21 @@ class _DetailProductPageState extends State<DetailProductPage> {
           const SizedBox(width: 18),
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  cartProvider.addCartWithQty(
-                    widget.product!,
-                    qty,
-                    context,
-                  );
+              onTap: (widget.product!.stok! <= 0)
+                  ? null
+                  : () {
+                      setState(() {
+                        cartProvider.addCartWithQty(
+                          widget.product!,
+                          qty,
+                          context,
+                        );
 
-                  Navigator.pop(context);
+                        Navigator.pop(context);
 
-                  qty = 1;
-                });
-              },
+                        qty = 1;
+                      });
+                    },
               child: Container(
                 width: double.infinity,
                 height: 49,

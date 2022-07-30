@@ -10,7 +10,6 @@ import 'package:toko_app/pages/detail_product_page.dart';
 import 'package:toko_app/pages/product_page.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/best_sale_widget.dart';
-import 'package:toko_app/widgets/category_product_widget.dart';
 import 'package:toko_app/widgets/category_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -179,8 +178,11 @@ class _HomePageState extends State<HomePage> {
           width: double.infinity,
           height: 120,
           child: StreamBuilder<QuerySnapshot>(
-            stream:
-                promos.orderBy('date', descending: true).limit(5).snapshots(),
+            stream: promos
+                .where('publikasi', isEqualTo: true)
+                .orderBy('date', descending: true)
+                .limit(5)
+                .snapshots(),
             builder: ((context, snapshot) {
               if (snapshot.hasData) {
                 return ListView(
@@ -306,7 +308,11 @@ class _HomePageState extends State<HomePage> {
   Widget promo() {
     CollectionReference promos = firestore.collection('promo');
     return StreamBuilder<QuerySnapshot>(
-        stream: promos.orderBy("date", descending: true).limit(5).snapshots(),
+        stream: promos
+            .where('publikasi', isEqualTo: true)
+            .orderBy("date", descending: true)
+            .limit(5)
+            .snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return CarouselSlider(

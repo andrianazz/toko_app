@@ -74,6 +74,7 @@ class _ProductPageState extends State<ProductPage> {
           Expanded(
             child: Container(
               width: double.infinity,
+
               height: 36,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -179,15 +180,13 @@ class _ProductPageState extends State<ProductPage> {
         stream: searchText.isNotEmpty
             ? products
                 .where('nama', isGreaterThanOrEqualTo: searchText)
-                .where('sisa_stok', isGreaterThanOrEqualTo: 1)
+                // .where('sisa_stok', isGreaterThan: 0)
                 .snapshots()
             : widget.name == null
-                ? products
-                    .where('sisa_stok', isGreaterThanOrEqualTo: 1)
-                    .snapshots()
+                ? products.where('sisa_stok', isGreaterThan: 0).snapshots()
                 : products
+                    // .where('sisa_stok', isGreaterThan: 0)
                     .where('tag', arrayContains: widget.name)
-                    .where('sisa_stok', isGreaterThanOrEqualTo: 1)
                     .snapshots(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {

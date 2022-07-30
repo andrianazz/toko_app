@@ -11,6 +11,7 @@ class TransactionModel {
   String? idCashier;
   String? payment;
   int? ongkir;
+  int? kodeUnik;
   String? status;
   String? keterangan;
 
@@ -25,6 +26,7 @@ class TransactionModel {
     this.idCashier,
     this.payment,
     this.ongkir,
+    this.kodeUnik,
     this.status,
     this.keterangan,
   });
@@ -42,6 +44,7 @@ class TransactionModel {
     idCashier = json['id_kasir'];
     payment = json['payment'];
     ongkir = json['ongkir'];
+    kodeUnik = json['kode_unik'];
     status = json['status'];
     keterangan = json['keterangan'];
   }
@@ -58,6 +61,7 @@ class TransactionModel {
       'id_kasir': idCashier,
       'payment': payment,
       'ongkir': ongkir,
+      'kode_unik': kodeUnik,
       'status': status,
       'keterangan': keterangan,
     };
