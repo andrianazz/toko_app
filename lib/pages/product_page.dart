@@ -74,7 +74,6 @@ class _ProductPageState extends State<ProductPage> {
           Expanded(
             child: Container(
               width: double.infinity,
-
               height: 36,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -179,7 +178,9 @@ class _ProductPageState extends State<ProductPage> {
       child: StreamBuilder<QuerySnapshot>(
         stream: searchText.isNotEmpty
             ? products
-                .where('nama', isGreaterThanOrEqualTo: searchText)
+                .where('nama',
+                    isGreaterThanOrEqualTo: searchText,
+                    isLessThanOrEqualTo: searchText + "z")
                 // .where('sisa_stok', isGreaterThan: 0)
                 .snapshots()
             : widget.name == null
@@ -197,22 +198,26 @@ class _ProductPageState extends State<ProductPage> {
                       e.data() as Map<String, dynamic>;
                   ProductModel productModel = ProductModel.fromJson(product);
 
-                  return Container(
-                    margin: EdgeInsets.only(left: 10, right: 10),
-                    child: BestSaleWidget(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailProductPage(
-                              product: productModel,
+                  if (product['sisa_stok'] >= 1) {
+                    return Container(
+                      margin: EdgeInsets.only(left: 10, right: 10),
+                      child: BestSaleWidget(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailProductPage(
+                                product: productModel,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      product: product,
-                    ),
-                  );
+                          );
+                        },
+                        product: product,
+                      ),
+                    );
+                  } else {
+                    return SizedBox();
+                  }
                 }).toList());
           } else {
             return Column(

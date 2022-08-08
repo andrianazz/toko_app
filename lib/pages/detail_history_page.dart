@@ -518,7 +518,53 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
           ),
           SizedBox(height: 10),
           Visibility(
-            visible: (widget.transaction!.ongkir == 0) ? true : false,
+            visible: (widget.transaction!.payment == "MidTrans" &&
+                    widget.transaction!.status != "Selesai")
+                ? true
+                : false,
+            child: GestureDetector(
+              onTap: () async {
+                String total = NumberFormat.simpleCurrency(
+                  decimalDigits: 0,
+                  name: 'Rp. ',
+                ).format(widget.transaction!.totalTransaction!);
+
+                await launch(
+                    'https://wa.me/+628979036650?text=Halo, Saya ingin konfirmasi pembayaran yang sudah dilakukan untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total}');
+              },
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.done_all,
+                      color: primaryColor,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Konfirmasi Pembayaran",
+                      style: primaryText.copyWith(
+                        color: primaryColor,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: (widget.transaction!.ongkir == 0 &&
+                    widget.transaction!.payment != "MidTrans")
+                ? true
+                : false,
             child: GestureDetector(
               onTap: () async {
                 String total = NumberFormat.simpleCurrency(
@@ -619,7 +665,10 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
             ),
           ),
           Visibility(
-            visible: (widget.transaction!.ongkir == 0) ? true : false,
+            visible: (widget.transaction!.ongkir == 0 &&
+                    widget.transaction!.payment != "MidTrans")
+                ? true
+                : false,
             child: GestureDetector(
               onTap: () async {
                 showDialog(

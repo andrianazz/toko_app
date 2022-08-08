@@ -98,56 +98,66 @@ class TransactionProvider with ChangeNotifier {
       );
 
       if (transactions[0].payment!.contains("MidTrans")) {
-        var url = "https://app.sandbox.midtrans.com/snap/v1/transactions";
+        String sandBox =
+            "https://app.sandbox.midtrans.com/snap/v1/transactions";
+        String authSandBox =
+            "Basic U0ItTWlkLXNlcnZlci1WM25HNktjMkNZY2F2MEpqZ3h6NHNRa0o=";
+
+        String production = "https://app.midtrans.com/snap/v1/transactions";
+        String authProduction =
+            "Basic TWlkLXNlcnZlci1zaVI1OUpRUkotNWN0dkg3dDBrcVd2NTM6";
+
+        var url = sandBox;
         var headers = {
           "Accept": "application/json",
-          "Authorization":
-              "Basic U0ItTWlkLXNlcnZlci1WM25HNktjMkNZY2F2MEpqZ3h6NHNRa0o=",
+          "Authorization": "${authSandBox}",
           "Content-Type": "application/json"
         };
 
-        var body = jsonEncode({
-          "transaction_details": {
-            "order_id": transactions[0].id,
-            "gross_amount": transactions[0].totalTransaction,
-          },
-          "credit_card": {
-            "secure": true,
-          },
-          "customer_details": {
-            "first_name": nama,
-            "last_name": "",
-            "email": email,
-            "phone": phone,
-          },
-          "item_details": [
-            {
-              "id": '998',
-              "price": ongkir,
-              "quantity": 1,
-              "name": 'ongkir',
-              "brand": "Ongkir",
-              "merchant_name": "Galeri LAM",
+        var body = jsonEncode(
+          {
+            "transaction_details": {
+              "order_id": transactions[0].id,
+              "gross_amount": transactions[0].totalTransaction,
             },
-            {
-              "id": '999',
-              "price": transactions[0].kodeUnik,
-              "quantity": 1,
-              "name": 'Kode Unik',
-              "brand": "Kode Unik",
-              "merchant_name": "Galeri LAM",
+            "credit_card": {
+              "secure": true,
             },
-            for (var cart in carts2)
+            "customer_details": {
+              "first_name": nama,
+              "last_name": "",
+              "email": email,
+              "phone": phone,
+            },
+            "item_details": [
               {
-                "id": cart['id'],
-                "price": cart['harga_jual'],
-                "quantity": cart['jumlah'],
-                "name": cart['nama_produk'],
-                "brand": cart['nama_produk'],
+                "id": '998',
+                "price": ongkir,
+                "quantity": 1,
+                "name": 'ongkir',
+                "brand": "Ongkir",
                 "merchant_name": "Galeri LAM",
-              }
-          ]
-        });
+              },
+              {
+                "id": '999',
+                "price": transactions[0].kodeUnik,
+                "quantity": 1,
+                "name": 'Kode Unik',
+                "brand": "Kode Unik",
+                "merchant_name": "Galeri LAM",
+              },
+              for (var cart in carts2)
+                {
+                  "id": cart['id'],
+                  "price": cart['harga_jual'],
+                  "quantity": cart['jumlah'],
+                  "name": cart['nama_produk'],
+                  "brand": cart['nama_produk'],
+                  "merchant_name": "Galeri LAM",
+                }
+            ]
+          },
+        );
 
         var response =
             await http.post(Uri.parse(url), headers: headers, body: body);

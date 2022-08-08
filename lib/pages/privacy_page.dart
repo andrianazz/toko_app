@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../theme.dart';
 
@@ -216,11 +217,17 @@ class PrivacyPage extends StatelessWidget {
                 textAlign: TextAlign.justify,
               ),
               SizedBox(height: 10),
-              Text(
-                "Contact Us",
-                style: primaryText.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+              GestureDetector(
+                onTap: () async {
+                  await launch(
+                      "https://www.instagram.com/andrianwahyu41/?hl=id");
+                },
+                child: Text(
+                  "Contact Us",
+                  style: primaryText.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               SizedBox(height: 5),

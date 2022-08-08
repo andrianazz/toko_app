@@ -402,24 +402,36 @@ class _CartPageState extends State<CartPage> {
           const SizedBox(height: 9),
           GestureDetector(
             onTap: () async {
-              tProvider.addTransactions(
-                  context,
-                  cartProvider.carts,
-                  selectedPayment,
-                  0,
-                  kodeUnik,
-                  cartProvider.getTotal() + kodeUnik + 0,
-                  cartProvider.carts.map((e) => e.toJson()).toList(),
-                  alamat,
-                  idCostumer,
-                  nama,
-                  email,
-                  phone);
+              if (selectedPayment != '') {
+                tProvider.addTransactions(
+                    context,
+                    cartProvider.carts,
+                    selectedPayment,
+                    0,
+                    kodeUnik,
+                    cartProvider.getTotal() + kodeUnik + 0,
+                    cartProvider.carts.map((e) => e.toJson()).toList(),
+                    alamat,
+                    idCostumer,
+                    nama,
+                    email,
+                    phone);
 
-              setState(() {
-                cartProvider.carts.clear();
-                tProvider.transactions.clear();
-              });
+                setState(() {
+                  cartProvider.carts.clear();
+                  tProvider.transactions.clear();
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Silahkan pilih metode pembayaran",
+                      textAlign: TextAlign.center,
+                    ),
+                    backgroundColor: redColor,
+                  ),
+                );
+              }
             },
             child: Container(
               height: 56,
