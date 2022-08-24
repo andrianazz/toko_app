@@ -307,7 +307,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Kota",
+                            "Kota / Kabupaten",
                             style: primaryText.copyWith(
                               fontWeight: FontWeight.bold,
                             ),

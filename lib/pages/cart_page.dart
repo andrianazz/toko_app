@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ import 'package:toko_app/providers/cart_provider.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/cart_widget.dart';
 import '../providers/transaction_provider.dart';
+import 'package:http/http.dart' as http;
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   int kodeUnik = Random().nextInt(499);
+  int ongkir = 0;
 
   List payments = [
     'Dana',
@@ -28,8 +31,6 @@ class _CartPageState extends State<CartPage> {
     'ShopeePay',
     'OVO',
     'MidTrans',
-    "BNI",
-    "BRI"
   ];
   String selectedPayment = "";
 
@@ -45,6 +46,7 @@ class _CartPageState extends State<CartPage> {
   String email = '';
   String phone = '';
   String alamat = '';
+  String kotaCost = '';
 
   Future<void> getId() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -68,6 +70,7 @@ class _CartPageState extends State<CartPage> {
 
     setState(() {
       alamat = '$address, $kecamatan, $kelurahan, $kota, $provinsi';
+      kotaCost = '$kota';
       nama = '$nameString';
       email = '$emailString';
       phone = '$phoneString';
@@ -364,7 +367,7 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
               Text(
-                "?",
+                '?',
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -402,25 +405,72 @@ class _CartPageState extends State<CartPage> {
           const SizedBox(height: 9),
           GestureDetector(
             onTap: () async {
-              if (selectedPayment != '') {
-                tProvider.addTransactions(
-                    context,
-                    cartProvider.carts,
-                    selectedPayment,
-                    0,
-                    kodeUnik,
-                    cartProvider.getTotal() + kodeUnik + 0,
-                    cartProvider.carts.map((e) => e.toJson()).toList(),
-                    alamat,
-                    idCostumer,
-                    nama,
-                    email,
-                    phone);
+              if (ongkir == 0 && selectedPayment == "MidTrans") {
+                Map<String, dynamic> city = {
+                  'Bengkalis': '60',
+                  'Dumai': '120',
+                  'Indragiri Hilir': '147',
+                  'Indragiri Hulu': '148',
+                  'Kampar': '166',
+                  'Kepulauan Meranti': '187',
+                  'Kuantan Singingi': '207',
+                  'Pekanbaru': '350',
+                  'Pelalawan': '351',
+                  'Rokan Hilir': '381',
+                  'Rokan Hulu': '382',
+                  'Siak': '406',
+                };
+
+                var urlCost = "https://api.rajaongkir.com/starter/cost";
+
+                var headers = {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'key': '065a4fd45e5f3239a54a40105651accf',
+                };
+
+                var body = new Map<String, dynamic>();
+                body['origin'] = '350';
+                body['destination'] = city[kotaCost];
+                body['weight'] = '1700';
+                body['courier'] = 'jne';
+
+                var response2 = await http.post(Uri.parse(urlCost),
+                    headers: headers, body: body);
+
+                Map<String, dynamic> apiCost = json.decode(response2.body);
 
                 setState(() {
-                  cartProvider.carts.clear();
-                  tProvider.transactions.clear();
+                  ongkir = apiCost['rajaongkir']['results'][0]['costs'][0]
+                      ['cost'][0]['value'];
+                  print(ongkir);
                 });
+              }
+
+              if (selectedPayment != '') {
+                if (ongkir != 0) {
+                  int ongkirDefault =
+                      selectedPayment == "MidTrans" ? ongkir : 0;
+
+                  tProvider.addTransactions(
+                      context,
+                      cartProvider.carts,
+                      selectedPayment,
+                      ongkirDefault,
+                      kodeUnik,
+                      cartProvider.getTotal() + kodeUnik + ongkir,
+                      cartProvider.carts.map((e) => e.toJson()).toList(),
+                      alamat,
+                      idCostumer,
+                      nama,
+                      email,
+                      phone);
+
+                  setState(() {
+                    cartProvider.carts.clear();
+                    tProvider.transactions.clear();
+                    ongkir = 0;
+                  });
+                }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

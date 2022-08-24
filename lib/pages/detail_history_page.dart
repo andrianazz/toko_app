@@ -359,8 +359,8 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                       )
                     ],
                   ),
-                  widget.transaction!.status == "Proses" ||
-                          widget.transaction!.status == "Bayar"
+                  widget.transaction!.status! == "Proses" ||
+                          widget.transaction!.status! == "Bayar"
                       ? GestureDetector(
                           onTap: () async {
                             String total = NumberFormat.simpleCurrency(
@@ -605,7 +605,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
           ),
           Visibility(
             visible: (widget.transaction!.ongkir! > 0 &&
-                widget.transaction!.status != "Selesai"),
+                widget.transaction!.status == "Bayar"),
             child: GestureDetector(
               onTap: () async {
                 String total = NumberFormat.simpleCurrency(
@@ -613,7 +613,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                   name: 'Rp. ',
                 ).format(widget.transaction!.totalTransaction!);
                 await launch(
-                    'https://wa.me/+628979036650?text=Halo, Saya ingin membayar untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total} \n\n'
+                    'https://wa.me/08979036650?text=Halo, Saya ingin membayar untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total} \n\n'
                     'Berikut bukti pembayaran saya: \n\n');
               },
               child: Container(

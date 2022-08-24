@@ -107,11 +107,14 @@ class TransactionProvider with ChangeNotifier {
         String authProduction =
             "Basic TWlkLXNlcnZlci1zaVI1OUpRUkotNWN0dkg3dDBrcVd2NTM6";
 
-        var url = sandBox;
+        print(transactions[0].toJson());
+        print(carts2);
+
+        var url = production;
         var headers = {
           "Accept": "application/json",
-          "Authorization": "${authSandBox}",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": "${authProduction}",
         };
 
         var body = jsonEncode(
@@ -132,7 +135,7 @@ class TransactionProvider with ChangeNotifier {
             "item_details": [
               {
                 "id": '998',
-                "price": ongkir,
+                "price": transactions[0].ongkir,
                 "quantity": 1,
                 "name": 'ongkir',
                 "brand": "Ongkir",

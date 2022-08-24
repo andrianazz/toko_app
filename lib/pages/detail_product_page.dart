@@ -171,14 +171,17 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 width: double.infinity,
                 height: 49,
                 decoration: BoxDecoration(
-                  color: primaryColor,
+                  color: widget.product!.stok! >= 1
+                      ? primaryColor
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Center(
                   child: Text(
-                    "+ Keranjang",
+                    widget.product!.stok! >= 1 ? "+ Keranjang" : "Stok Habis",
                     style: primaryText.copyWith(
-                      color: Colors.white,
+                      color:
+                          widget.product!.stok! >= 1 ? Colors.white : redColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
