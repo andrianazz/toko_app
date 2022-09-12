@@ -303,6 +303,73 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
+                "Nomor Resi Pengiriman",
+                style: primaryText.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: secondaryColor,
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.account_balance_wallet_rounded,
+                            color: primaryColor,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 25),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Nomor Resi",
+                        style: primaryText.copyWith(
+                          fontSize: 12,
+                          color: greyColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        widget.transaction!.resi! == ''
+                            ? 'Belum ada Resi'
+                            : widget.transaction!.resi!,
+                        style: primaryText.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 30),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: cartColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
                 "Ongkos Kirim",
                 style: primaryText.copyWith(
                   fontSize: 16,

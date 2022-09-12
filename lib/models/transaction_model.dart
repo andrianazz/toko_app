@@ -14,6 +14,7 @@ class TransactionModel {
   int? kodeUnik;
   String? status;
   String? keterangan;
+  String? resi;
 
   TransactionModel({
     this.id,
@@ -29,6 +30,7 @@ class TransactionModel {
     this.kodeUnik,
     this.status,
     this.keterangan,
+    this.resi,
   });
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class TransactionModel {
     kodeUnik = json['kode_unik'];
     status = json['status'];
     keterangan = json['keterangan'];
+    resi = json['resi'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -64,6 +67,7 @@ class TransactionModel {
       'kode_unik': kodeUnik,
       'status': status,
       'keterangan': keterangan,
+      'resi': resi,
     };
   }
 }
