@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:toko_app/models/transaction_model.dart';
+import 'package:toko_app/pages/pay_midtrans_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../theme.dart';
@@ -426,7 +427,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                       )
                     ],
                   ),
-                  widget.transaction!.status! == "Proses" ||
+                  widget.transaction!.setOngkir == false ||
                           widget.transaction!.status! == "Bayar"
                       ? GestureDetector(
                           onTap: () async {
@@ -616,7 +617,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                       width: 5,
                     ),
                     Text(
-                      "Konfirmasi Pembayaran",
+                      "Beritahu Penjual",
                       style: primaryText.copyWith(
                         color: primaryColor,
                         fontWeight: FontWeight.w800,
@@ -628,7 +629,58 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
             ),
           ),
           Visibility(
-            visible: (widget.transaction!.ongkir == 0 &&
+            visible: (widget.transaction!.payment == "MidTrans" &&
+                    widget.transaction!.redirectUrl != "")
+                ? true
+                : false,
+            child: SizedBox(height: 10),
+          ),
+          Visibility(
+            visible: (widget.transaction!.payment == "MidTrans" &&
+                    widget.transaction!.redirectUrl != "")
+                ? true
+                : false,
+            child: GestureDetector(
+              onTap: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PayMidtransPage(
+                      url: widget.transaction!.redirectUrl,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.payments_outlined,
+                      color: primaryColor,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Pembayaran",
+                      style: primaryText.copyWith(
+                        color: primaryColor,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: (widget.transaction!.setOngkir == false &&
                     widget.transaction!.payment != "MidTrans")
                 ? true
                 : false,
@@ -671,8 +723,10 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
             ),
           ),
           Visibility(
-            visible: (widget.transaction!.ongkir! > 0 &&
-                widget.transaction!.status == "Bayar"),
+            visible: (widget.transaction!.setOngkir == true &&
+                    widget.transaction!.status == "Bayar")
+                ? true
+                : false,
             child: GestureDetector(
               onTap: () async {
                 String total = NumberFormat.simpleCurrency(
@@ -680,7 +734,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
                   name: 'Rp. ',
                 ).format(widget.transaction!.totalTransaction!);
                 await launch(
-                    'https://wa.me/08979036650?text=Halo, Saya ingin membayar untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total} \n\n'
+                    'https://wa.me/+628979036650?text=Halo, Saya ingin membayar untuk transaksi ${widget.transaction!.id!} berjumlah ${widget.transaction!.totalProducts!} item dengan total = ${total} \n\n'
                     'Berikut bukti pembayaran saya: \n\n');
               },
               child: Container(
@@ -726,13 +780,13 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
             ),
           ),
           Visibility(
-            visible: (widget.transaction!.ongkir == 0) ? true : false,
+            visible: (widget.transaction!.setOngkir == false) ? true : false,
             child: SizedBox(
               height: 10,
             ),
           ),
           Visibility(
-            visible: (widget.transaction!.ongkir == 0 &&
+            visible: (widget.transaction!.setOngkir == false &&
                     widget.transaction!.payment != "MidTrans")
                 ? true
                 : false,

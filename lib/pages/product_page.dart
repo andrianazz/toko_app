@@ -100,13 +100,22 @@ class _ProductPageState extends State<ProductPage> {
                           });
                         },
                         onChanged: (value) {
-                          Future.delayed(Duration(milliseconds: 1200), () {
-                            setState(() {
-                              searchText = value[0].toUpperCase() +
-                                  value.substring(1).toLowerCase();
+                          // ignore: unnecessary_null_comparison
+                          if (value != '') {
+                            Future.delayed(Duration(milliseconds: 1200), () {
+                              setState(() {
+                                searchText = value[0].toUpperCase() +
+                                    value.substring(1).toLowerCase();
+                              });
                             });
-                          });
-                          print(searchText);
+                            print(searchText);
+                          } else {
+                            setState(() {
+                              searchController.clear();
+                              searchText = '';
+                              widget.name = null;
+                            });
+                          }
                         },
                         decoration: InputDecoration(
                           contentPadding:
@@ -150,10 +159,18 @@ class _ProductPageState extends State<ProductPage> {
                   margin: const EdgeInsets.only(right: 10),
                   child: CategoryProductWidget(
                     onTap: () {
-                      setState(() {
-                        widget.name = cat.name!;
-                        searchController.clear();
-                      });
+                      if (widget.name != cat.name) {
+                        setState(() {
+                          widget.name = cat.name!;
+                          searchController.clear();
+                        });
+                      } else {
+                        setState(() {
+                          searchController.clear();
+                          searchText = '';
+                          widget.name = null;
+                        });
+                      }
                     },
                     category: cat,
                     isSelected: widget.name == cat.name,

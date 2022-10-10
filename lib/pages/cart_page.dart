@@ -440,8 +440,9 @@ class _CartPageState extends State<CartPage> {
                 Map<String, dynamic> apiCost = json.decode(response2.body);
 
                 setState(() {
-                  ongkir = apiCost['rajaongkir']['results'][0]['costs'][0]
-                      ['cost'][0]['value'];
+                  // ongkir = apiCost['rajaongkir']['results'][0]['costs'][0]
+                  //     ['cost'][0]['value'];
+                  ongkir = 5000;
                   print(ongkir);
                 });
               }
@@ -450,6 +451,28 @@ class _CartPageState extends State<CartPage> {
                 if (ongkir != 0) {
                   int ongkirDefault =
                       selectedPayment == "MidTrans" ? ongkir : 0;
+
+                  tProvider.addTransactions(
+                      context,
+                      cartProvider.carts,
+                      selectedPayment,
+                      ongkirDefault,
+                      kodeUnik,
+                      cartProvider.getTotal() + kodeUnik + ongkir,
+                      cartProvider.carts.map((e) => e.toJson()).toList(),
+                      alamat,
+                      idCostumer,
+                      nama,
+                      email,
+                      phone);
+
+                  setState(() {
+                    cartProvider.carts.clear();
+                    tProvider.transactions.clear();
+                    ongkir = 0;
+                  });
+                } else {
+                  int ongkirDefault = 0;
 
                   tProvider.addTransactions(
                       context,

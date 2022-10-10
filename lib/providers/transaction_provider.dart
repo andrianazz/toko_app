@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:toko_app/models/item_model.dart';
 import 'package:uuid/uuid.dart';
@@ -54,6 +53,7 @@ class TransactionProvider with ChangeNotifier {
             totalProducts: carts2.length,
             totalTransaction: total,
             status: 'Proses',
+            setOngkir: false,
             ongkir: ongkir,
             kodeUnik: kodeUnik,
             keterangan: ''),
@@ -73,6 +73,7 @@ class TransactionProvider with ChangeNotifier {
         'ongkir': transactions[0].ongkir,
         'kode_unik': transactions[0].kodeUnik,
         'status': transactions[0].status,
+        'setOngkir': transactions[0].setOngkir,
         'keterangan': transactions[0].keterangan,
       });
 
@@ -170,6 +171,9 @@ class TransactionProvider with ChangeNotifier {
           print("Pindah Halaman");
           Map<String, dynamic> temp = json.decode(response.body);
           String url = temp['redirect_url'];
+
+          transac.doc(transactions[0].id).update({'redirect_url': url});
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -186,8 +190,7 @@ class TransactionProvider with ChangeNotifier {
               .get()
               .then((value) {
             value.docs.map((e) {
-              TransactionModel trans =
-                  TransactionModel.fromJson(e.data() as Map<String, dynamic>);
+              TransactionModel trans = TransactionModel.fromJson(e.data());
               return Navigator.push(
                 context,
                 MaterialPageRoute(

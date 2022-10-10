@@ -13,8 +13,10 @@ class TransactionModel {
   int? ongkir;
   int? kodeUnik;
   String? status;
+  bool? setOngkir;
   String? keterangan;
   String? resi;
+  String? redirectUrl;
 
   TransactionModel({
     this.id,
@@ -29,8 +31,10 @@ class TransactionModel {
     this.ongkir,
     this.kodeUnik,
     this.status,
+    this.setOngkir,
     this.keterangan,
     this.resi,
+    this.redirectUrl,
   });
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -48,8 +52,10 @@ class TransactionModel {
     ongkir = json['ongkir'];
     kodeUnik = json['kode_unik'];
     status = json['status'];
+    setOngkir = json['setOngkir'] ?? false;
     keterangan = json['keterangan'];
     resi = json['resi'] ?? "";
+    redirectUrl = json['redirect_url'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -66,8 +72,10 @@ class TransactionModel {
       'ongkir': ongkir,
       'kode_unik': kodeUnik,
       'status': status,
+      'setOngkir': setOngkir,
       'keterangan': keterangan,
       'resi': resi,
+      'redirect_url': redirectUrl,
     };
   }
 }
