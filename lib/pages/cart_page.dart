@@ -453,18 +453,20 @@ class _CartPageState extends State<CartPage> {
                       selectedPayment == "MidTrans" ? ongkir : 0;
 
                   tProvider.addTransactions(
-                      context,
-                      cartProvider.carts,
-                      selectedPayment,
-                      ongkirDefault,
-                      kodeUnik,
-                      cartProvider.getTotal() + kodeUnik + ongkir,
-                      cartProvider.carts.map((e) => e.toJson()).toList(),
-                      alamat,
-                      idCostumer,
-                      nama,
-                      email,
-                      phone);
+                    context,
+                    cartProvider.carts,
+                    selectedPayment,
+                    ongkirDefault,
+                    kodeUnik,
+                    cartProvider.getTotal() + kodeUnik + ongkir,
+                    cartProvider.carts.map((e) => e.toJson()).toList(),
+                    alamat,
+                    idCostumer,
+                    nama,
+                    email,
+                    phone,
+                    cartProvider.getTotal(),
+                  );
 
                   setState(() {
                     cartProvider.carts.clear();
@@ -475,18 +477,20 @@ class _CartPageState extends State<CartPage> {
                   int ongkirDefault = 0;
 
                   tProvider.addTransactions(
-                      context,
-                      cartProvider.carts,
-                      selectedPayment,
-                      ongkirDefault,
-                      kodeUnik,
-                      cartProvider.getTotal() + kodeUnik + ongkir,
-                      cartProvider.carts.map((e) => e.toJson()).toList(),
-                      alamat,
-                      idCostumer,
-                      nama,
-                      email,
-                      phone);
+                    context,
+                    cartProvider.carts,
+                    selectedPayment,
+                    ongkirDefault,
+                    kodeUnik,
+                    cartProvider.getTotal() + kodeUnik + ongkir,
+                    cartProvider.carts.map((e) => e.toJson()).toList(),
+                    alamat,
+                    idCostumer,
+                    nama,
+                    email,
+                    phone,
+                    cartProvider.getTotal(),
+                  );
 
                   setState(() {
                     cartProvider.carts.clear();

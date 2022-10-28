@@ -36,6 +36,7 @@ class TransactionProvider with ChangeNotifier {
     String nama,
     String email,
     String phone,
+    int subtotal,
   ) async {
     CollectionReference ref = firestore.collection('transactions');
     ref.get().then((snap) async {
@@ -72,6 +73,9 @@ class TransactionProvider with ChangeNotifier {
         'payment': transactions[0].payment,
         'ongkir': transactions[0].ongkir,
         'kode_unik': transactions[0].kodeUnik,
+        'ppn': 0,
+        'ppl': 0,
+        'subtotal': subtotal,
         'status': transactions[0].status,
         'setOngkir': transactions[0].setOngkir,
         'keterangan': transactions[0].keterangan,
