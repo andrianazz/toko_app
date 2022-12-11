@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../theme.dart';
@@ -37,7 +38,25 @@ class _PayMidtransPageState extends State<PayMidtransPage> {
         onWebViewCreated: (controller) {
           this.controller = controller;
         },
+        navigationDelegate: (NavigationRequest request) {
+          if (request.url.startsWith('intent://')) {
+            print('blocking navigation to $request}');
+            _launchURL(request.url.toString());
+            return NavigationDecision.prevent;
+          }
+
+          print('allowing navigation to $request');
+          return NavigationDecision.navigate;
+        },
       ),
     );
+  }
+}
+
+_launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }

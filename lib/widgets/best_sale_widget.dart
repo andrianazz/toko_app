@@ -83,7 +83,7 @@ class BestSaleWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    '${product!['deskripsi']}',
+                    "${product!['deskripsi'] ?? 'Tidak ada Deskripsi'}",
                     style: primaryText.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
