@@ -42,23 +42,43 @@ class TransactionProvider with ChangeNotifier {
     ref.get().then((snap) async {
       CollectionReference transac = firestore.collection('transactions');
 
-      _transactions.add(
-        TransactionModel(
-            id: Uuid().v4(),
-            idCashier: "7885863e-2bc1-54d7-bc65-4f039daa2532",
-            payment: payment,
-            date: DateTime.now(),
-            address: address,
-            idCostumer: idCostumer,
-            items: carts,
-            totalProducts: carts2.length,
-            totalTransaction: total,
-            status: 'Proses',
-            setOngkir: false,
-            ongkir: ongkir,
-            kodeUnik: kodeUnik,
-            keterangan: ''),
-      );
+      if (payment != "COD") {
+        _transactions.add(
+          TransactionModel(
+              id: Uuid().v4(),
+              idCashier: "7885863e-2bc1-54d7-bc65-4f039daa2532",
+              payment: payment,
+              date: DateTime.now(),
+              address: address,
+              idCostumer: idCostumer,
+              items: carts,
+              totalProducts: carts2.length,
+              totalTransaction: total,
+              status: 'Bayar',
+              setOngkir: true,
+              ongkir: ongkir,
+              kodeUnik: kodeUnik,
+              keterangan: ''),
+        );
+      } else {
+        _transactions.add(
+          TransactionModel(
+              id: Uuid().v4(),
+              idCashier: "7885863e-2bc1-54d7-bc65-4f039daa2532",
+              payment: payment,
+              date: DateTime.now(),
+              address: address,
+              idCostumer: idCostumer,
+              items: carts,
+              totalProducts: carts2.length,
+              totalTransaction: total,
+              status: 'Proses',
+              setOngkir: false,
+              ongkir: ongkir,
+              kodeUnik: kodeUnik,
+              keterangan: ''),
+        );
+      }
 
       transac.doc('${transactions[0].id.toString()}').set({
         'id': transactions[0].id,
@@ -205,6 +225,38 @@ class TransactionProvider with ChangeNotifier {
           });
         }
       }
+
+      sendNotificationMessage(
+        "Pesanan Baru",
+        "Pesanan Online ${transactions[0].id} ${transactions[0].totalProducts} Produk, dengan Total ${transactions[0].totalTransaction} ",
+        "cLMbgDpMSSWAGRr-n9ArrS:APA91bEa_XoQ6aBJzxh_azqpeA-L3sIwkcfHWV-THw16MIARtOc0ohGdxl4GVfRzwRwN5trZ3L-oMV6eyGzW1dIZe9yzn91v1ycIeqir1Hr9oo1wVpDATaqikzygEaQ8epZana_qyxTW",
+      );
     });
+  }
+
+  void sendNotificationMessage(String title, String body, String token) async {
+    try {
+      await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization':
+                'key=AAAATv2OdgQ:APA91bFRUB1YE8sv0iR_AwEHOH2QZuQNj_BkCJ67h8v7tEOBdCiMOBEsDw13WhoAX8lpoVaXCQqbT-T15GxGg7zaggMOEAG9KfItRrypXnoFAQogSvtB0VDhJBSK0rL4wLYToWkdpjEu',
+          },
+          body: jsonEncode({
+            'notification': {
+              'body': '${body}',
+              'title': '${title}',
+            },
+            'priority': 'high',
+            'data': {
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done',
+            },
+            'to': '${token}'
+          }));
+    } catch (e) {
+      print(e);
+    }
   }
 }

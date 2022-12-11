@@ -2,11 +2,15 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toko_app/models/city_rajaongkir_model.dart';
+import 'package:toko_app/models/cost_rajaongkir_model.dart';
+import 'package:toko_app/models/province_rajaongkir_model.dart';
 import 'package:toko_app/providers/cart_provider.dart';
 import 'package:toko_app/theme.dart';
 import 'package:toko_app/widgets/cart_widget.dart';
@@ -22,8 +26,14 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  bool _isFinish = false;
   int kodeUnik = Random().nextInt(499);
   int ongkir = 0;
+
+  List<String> pembayaran = ["Bayar Langsung", "COD"];
+  String selectedPembayaran = "Bayar Langsung";
+  List<String> ekspedisi = ["jne", "tiki", "pos"];
+  String selectedEkspedisi = "";
 
   List payments = [
     'Dana',
@@ -33,6 +43,10 @@ class _CartPageState extends State<CartPage> {
     'MidTrans',
   ];
   String selectedPayment = "";
+
+  String provinceID = "";
+  String cityID = "";
+  List<CostRajaongkirModel>? costRaja = [];
 
   @override
   void initState() {
@@ -80,6 +94,8 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
+
+    var rupiah = NumberFormat.currency(name: "Rp. ", decimalDigits: 0);
 
     return ListView(
       children: [
@@ -129,6 +145,51 @@ class _CartPageState extends State<CartPage> {
               )
             : SizedBox(),
         cartProvider.carts.isNotEmpty
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: pembayaran
+                    .map(
+                      (e) => GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedPembayaran = e;
+                            print(selectedPembayaran);
+                          });
+                        },
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                          margin:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: e == selectedPembayaran
+                                    ? primaryColor
+                                    : greyColor),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                e,
+                                style: primaryText.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: e == selectedPembayaran
+                                      ? primaryColor
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              )
+            : SizedBox(),
+        cartProvider.carts.isNotEmpty && selectedPembayaran != "COD"
             ? Column(
                 children: [
                   Container(
@@ -262,7 +323,263 @@ class _CartPageState extends State<CartPage> {
                 ],
               )
             : SizedBox(),
+        SizedBox(height: 20),
+        cartProvider.carts.isNotEmpty
+            ? Column(
+                children: [
+                  Text(
+                    "Ekspedisi pengiriman",
+                    style: primaryText.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: DropdownSearch<ProvinceRajaongkirModel>(
+                      asyncItems: (text) async {
+                        Uri url = Uri.parse(
+                            "https://api.rajaongkir.com/starter/province");
+
+                        try {
+                          final response = await http.get(
+                            url,
+                            headers: {
+                              'Content-Type':
+                                  'application/x-www-form-urlencoded',
+                              'key': '065a4fd45e5f3239a54a40105651accf'
+                            },
+                          );
+
+                          Map<String, dynamic> data =
+                              json.decode(response.body);
+                          var statusCode = data["rajaongkir"]["status"]["code"];
+
+                          if (statusCode != 200) {
+                            throw data["rajaongkir"]["status"]["description"];
+                          }
+
+                          var listAllProvince =
+                              data["rajaongkir"]["results"] as List<dynamic>;
+
+                          print(listAllProvince);
+
+                          var model = listAllProvince
+                              .map((e) => ProvinceRajaongkirModel.fromJson(e))
+                              .toList();
+
+                          return model;
+                        } catch (e) {
+                          return [];
+                        }
+                      },
+                      onChanged: (value) => setState(() {
+                        provinceID = value!.provinceId!;
+                        print(provinceID);
+                      }),
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          labelText: "Provinsi",
+                          hintText: "Pilih Provinsi",
+                        ),
+                      ),
+                      itemAsString: (ProvinceRajaongkirModel prov) =>
+                          prov.province!,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: DropdownSearch<CityRajaongkirModel>(
+                      asyncItems: (text) async {
+                        Uri url = Uri.parse(
+                            "https://api.rajaongkir.com/starter/city?province=$provinceID");
+
+                        try {
+                          final response = await http.get(
+                            url,
+                            headers: {
+                              'Content-Type':
+                                  'application/x-www-form-urlencoded',
+                              'key': '065a4fd45e5f3239a54a40105651accf'
+                            },
+                          );
+
+                          Map<String, dynamic> data =
+                              json.decode(response.body);
+                          var statusCode = data["rajaongkir"]["status"]["code"];
+
+                          if (statusCode != 200) {
+                            throw data["rajaongkir"]["status"]["description"];
+                          }
+
+                          var listAllCity =
+                              data["rajaongkir"]["results"] as List<dynamic>;
+
+                          print(listAllCity);
+
+                          var model = listAllCity
+                              .map((e) => CityRajaongkirModel.fromJson(e))
+                              .toList();
+
+                          return model;
+                        } catch (e) {
+                          print(e);
+                          return [];
+                        }
+                      },
+                      onChanged: (value) => setState(() {
+                        cityID = value!.cityId!;
+                        print(cityID);
+                      }),
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          labelText: "Kota",
+                          hintText: "Pilih Kota",
+                        ),
+                      ),
+                      itemAsString: (CityRajaongkirModel city) =>
+                          city.cityName!,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: ekspedisi
+                          .map(
+                            (e) => GestureDetector(
+                              onTap: () async {
+                                setState(() {
+                                  selectedEkspedisi = e;
+                                  print(selectedEkspedisi);
+                                });
+
+                                if (selectedEkspedisi != "") {
+                                  var urlCost =
+                                      "https://api.rajaongkir.com/starter/cost";
+
+                                  var headers = {
+                                    'Content-Type':
+                                        'application/x-www-form-urlencoded',
+                                    'key': '065a4fd45e5f3239a54a40105651accf',
+                                  };
+
+                                  var body = new Map<String, dynamic>();
+                                  body['origin'] = '350';
+                                  body['destination'] = cityID;
+                                  body['weight'] = '1700';
+                                  body['courier'] = selectedEkspedisi;
+
+                                  var response2 = await http.post(
+                                      Uri.parse(urlCost),
+                                      headers: headers,
+                                      body: body);
+
+                                  Map<String, dynamic> apiCost =
+                                      json.decode(response2.body);
+
+                                  var dataAllCost = apiCost["rajaongkir"]
+                                      ["results"] as List<dynamic>;
+
+                                  var costs = dataAllCost
+                                      .map((e) =>
+                                          CostRajaongkirModel.fromJson(e))
+                                      .toList();
+                                  setState(() {
+                                    costRaja = costs;
+                                    print(costRaja![0].costs);
+                                    _isFinish = true;
+                                    ongkir =
+                                        costRaja![0].costs![0].cost![0].value!;
+                                    print(ongkir);
+                                  });
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 15),
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 20),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: e == selectedEkspedisi
+                                          ? primaryColor
+                                          : greyColor),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      e.toUpperCase(),
+                                      style: primaryText.copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: e == selectedEkspedisi
+                                            ? primaryColor
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  _isFinish
+                      ? Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            margin: EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: greyColor,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${costRaja![0].costs![0].service!}",
+                                      style: primaryText.copyWith(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${costRaja![0].costs![0].description!}",
+                                      style: primaryText.copyWith(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${rupiah.format(costRaja![0].costs![0].cost![0].value)}",
+                                  style: primaryText.copyWith(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : SizedBox()
+                ],
+              )
+            : SizedBox(),
         const SizedBox(height: 30),
+
         cartProvider.carts.isNotEmpty
             ? checkout(context)
             : Center(
@@ -305,6 +622,8 @@ class _CartPageState extends State<CartPage> {
   Widget checkout(context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     TransactionProvider tProvider = Provider.of<TransactionProvider>(context);
+
+    var rupiah = NumberFormat.currency(name: "Rp. ", decimalDigits: 0);
 
     return Container(
       height: 244,
@@ -367,7 +686,7 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
               Text(
-                '?',
+                '${rupiah.format(ongkir)}',
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -394,7 +713,7 @@ class _CartPageState extends State<CartPage> {
                 NumberFormat.simpleCurrency(
                   decimalDigits: 0,
                   name: 'Rp. ',
-                ).format(cartProvider.getTotal() + 0 + kodeUnik),
+                ).format(cartProvider.getTotal() + ongkir + kodeUnik),
                 style: primaryText.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -405,99 +724,64 @@ class _CartPageState extends State<CartPage> {
           const SizedBox(height: 9),
           GestureDetector(
             onTap: () async {
-              if (ongkir == 0 && selectedPayment == "MidTrans") {
-                Map<String, dynamic> city = {
-                  'Bengkalis': '60',
-                  'Dumai': '120',
-                  'Indragiri Hilir': '147',
-                  'Indragiri Hulu': '148',
-                  'Kampar': '166',
-                  'Kepulauan Meranti': '187',
-                  'Kuantan Singingi': '207',
-                  'Pekanbaru': '350',
-                  'Pelalawan': '351',
-                  'Rokan Hilir': '381',
-                  'Rokan Hulu': '382',
-                  'Siak': '406',
-                };
+              if (selectedPayment != '' && ongkir != 0) {
+                int ongkirDefault = selectedPayment == "MidTrans" ? ongkir : 0;
 
-                var urlCost = "https://api.rajaongkir.com/starter/cost";
-
-                var headers = {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  'key': '065a4fd45e5f3239a54a40105651accf',
-                };
-
-                var body = new Map<String, dynamic>();
-                body['origin'] = '350';
-                body['destination'] = city[kotaCost];
-                body['weight'] = '1700';
-                body['courier'] = 'jne';
-
-                var response2 = await http.post(Uri.parse(urlCost),
-                    headers: headers, body: body);
-
-                Map<String, dynamic> apiCost = json.decode(response2.body);
+                tProvider.addTransactions(
+                  context,
+                  cartProvider.carts,
+                  selectedPayment,
+                  ongkirDefault,
+                  kodeUnik,
+                  cartProvider.getTotal() + kodeUnik + ongkirDefault,
+                  cartProvider.carts.map((e) => e.toJson()).toList(),
+                  alamat,
+                  idCostumer,
+                  nama,
+                  email,
+                  phone,
+                  cartProvider.getTotal(),
+                );
 
                 setState(() {
-                  // ongkir = apiCost['rajaongkir']['results'][0]['costs'][0]
-                  //     ['cost'][0]['value'];
-                  ongkir = 5000;
-                  print(ongkir);
+                  cartProvider.carts.clear();
+                  tProvider.transactions.clear();
+                  ongkir = 0;
                 });
-              }
+              } else if (selectedPembayaran == "COD" && ongkir != 0) {
+                int ongkirDefault = ongkir;
 
-              if (selectedPayment != '') {
-                if (ongkir != 0) {
-                  int ongkirDefault =
-                      selectedPayment == "MidTrans" ? ongkir : 0;
+                tProvider.addTransactions(
+                  context,
+                  cartProvider.carts,
+                  selectedPembayaran,
+                  ongkirDefault,
+                  kodeUnik,
+                  cartProvider.getTotal() + kodeUnik + ongkirDefault,
+                  cartProvider.carts.map((e) => e.toJson()).toList(),
+                  alamat,
+                  idCostumer,
+                  nama,
+                  email,
+                  phone,
+                  cartProvider.getTotal(),
+                );
 
-                  tProvider.addTransactions(
-                    context,
-                    cartProvider.carts,
-                    selectedPayment,
-                    ongkirDefault,
-                    kodeUnik,
-                    cartProvider.getTotal() + kodeUnik + ongkir,
-                    cartProvider.carts.map((e) => e.toJson()).toList(),
-                    alamat,
-                    idCostumer,
-                    nama,
-                    email,
-                    phone,
-                    cartProvider.getTotal(),
-                  );
-
-                  setState(() {
-                    cartProvider.carts.clear();
-                    tProvider.transactions.clear();
-                    ongkir = 0;
-                  });
-                } else {
-                  int ongkirDefault = 0;
-
-                  tProvider.addTransactions(
-                    context,
-                    cartProvider.carts,
-                    selectedPayment,
-                    ongkirDefault,
-                    kodeUnik,
-                    cartProvider.getTotal() + kodeUnik + ongkir,
-                    cartProvider.carts.map((e) => e.toJson()).toList(),
-                    alamat,
-                    idCostumer,
-                    nama,
-                    email,
-                    phone,
-                    cartProvider.getTotal(),
-                  );
-
-                  setState(() {
-                    cartProvider.carts.clear();
-                    tProvider.transactions.clear();
-                    ongkir = 0;
-                  });
-                }
+                setState(() {
+                  cartProvider.carts.clear();
+                  tProvider.transactions.clear();
+                  ongkir = 0;
+                });
+              } else if (ongkir == 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Silahkan pilih Ekspedisi Pengiriman",
+                      textAlign: TextAlign.center,
+                    ),
+                    backgroundColor: redColor,
+                  ),
+                );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
