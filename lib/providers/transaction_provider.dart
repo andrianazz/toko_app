@@ -135,11 +135,11 @@ class TransactionProvider with ChangeNotifier {
         print(transactions[0].toJson());
         print(carts2);
 
-        var url = production;
+        var url = sandBox;
         var headers = {
           "Accept": "application/json",
           "Content-Type": "application/json",
-          "Authorization": "${authProduction}",
+          "Authorization": "${authSandBox}",
         };
 
         var body = jsonEncode(

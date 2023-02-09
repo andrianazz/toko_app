@@ -653,6 +653,7 @@ class _DetailHistoryPageState extends State<DetailHistoryPage> {
               },
               child: Container(
                 height: 56,
+                margin: EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
